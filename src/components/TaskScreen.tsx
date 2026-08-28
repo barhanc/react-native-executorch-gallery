@@ -183,24 +183,19 @@ function StatusBanner({
       <View
         style={[
           styles.statusCard,
-          { backgroundColor: colors.successSoft, borderColor: colors.success },
+          { backgroundColor: colors.surface, borderColor: colors.border },
         ]}
       >
         <View style={styles.statusLeft}>
-          <View style={[styles.dot, { backgroundColor: colors.success }]} />
-          <Text style={[styles.statusText, { color: colors.success }]}>
-            On-device model ready
+          <View style={[styles.dot, { backgroundColor: '#10B981' }]} />
+          <Text style={[styles.statusText, { color: colors.textSecondary }]}>
+            Ready
           </Text>
         </View>
 
         {meta ? (
-          <View
-            style={[
-              styles.latencyBadge,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-            ]}
-          >
-            <Icon name="bolt" size={11} color={colors.accent} strokeWidth={2.4} />
+          <View style={styles.latencyRow}>
+            <Icon name="bolt" size={12} color={colors.accent} strokeWidth={2.4} />
             <Text style={[styles.latencyText, { color: colors.text }]}>{meta}</Text>
           </View>
         ) : null}
@@ -227,7 +222,7 @@ function StatusBanner({
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  headerBlock: { gap: spacing.sm },
+  headerBlock: { gap: spacing.xs + 2 },
   badge: {
     alignSelf: 'flex-start',
     paddingHorizontal: spacing.sm + 2,
@@ -242,29 +237,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: spacing.sm,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
+    paddingVertical: spacing.xs + 3,
     borderRadius: radius.md,
     borderWidth: StyleSheet.hairlineWidth,
-    minHeight: 44,
+    minHeight: 38,
   },
   statusLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    flex: 1,
+    gap: spacing.xs + 2,
   },
-  dot: { width: 7, height: 7, borderRadius: 4 },
-  statusText: { fontSize: 13, fontWeight: '500' },
-  latencyBadge: {
+  dot: { width: 6, height: 6, borderRadius: 3 },
+  statusText: { fontSize: 12, fontWeight: '600' },
+  latencyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
-    borderRadius: radius.xs,
-    borderWidth: StyleSheet.hairlineWidth,
+    gap: 4,
   },
-  latencyText: { fontSize: 11, fontWeight: '700', letterSpacing: 0.1 },
+  latencyText: { fontSize: 12, fontWeight: '700', letterSpacing: 0.1 },
   contentBody: {
     flex: 1,
     minHeight: 0,
