@@ -49,6 +49,36 @@ const palette = {
   },
 } as const;
 
+/** Overlay background colors for cards and pills. */
+export const overlay = {
+  bg: 'rgba(10, 16, 32, 0.76)',
+  bgStrong: 'rgba(10, 16, 32, 0.88)',
+  border: 'rgba(255, 255, 255, 0.16)',
+  borderStrong: 'rgba(255, 255, 255, 0.25)',
+  textPrimary: '#FFFFFF',
+  textSecondary: '#E2E8F0',
+  textMuted: '#94A3B8',
+  tint: '#4b6cf4',
+  tintSoft: 'rgba(75, 108, 244, 0.25)',
+  tintFaint: 'rgba(75, 108, 244, 0.08)',
+} as const;
+export const tints = {
+  blue: '#4b6cf4',
+  blueDark: '#7394ff',
+  cyan: '#38acdd',
+  cyanDark: '#6fcef5',
+  green: '#57b495',
+  greenDark: '#3fc684',
+  red: '#ff6259',
+  redDark: '#ff7774',
+  orange: '#f97316',
+  orangeDark: '#fb923c',
+  purple: '#782aeb',
+  purpleDark: '#b07eff',
+  pink: '#ec4899',
+  pinkDark: '#f472b6',
+} as const;
+
 export const spacing = {
   xxs: 2,
   xs: 4,

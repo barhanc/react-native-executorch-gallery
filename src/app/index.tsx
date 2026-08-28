@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { radius, spacing, useTheme } from '@/theme';
+import { radius, spacing, useTheme, tints } from '@/theme';
 import { Icon, type IconName } from '@/components/Icon';
 import { Logo } from '@/components/Logo';
 
@@ -12,7 +12,7 @@ type Task = {
   subtitle: string;
   model: string;
   iconName: IconName;
-  tint: string;
+  tint: keyof typeof tints;
   ready?: boolean;
 };
 
@@ -31,7 +31,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Detect and mask individual object instances',
         model: 'YOLO26 Nano',
         iconName: 'overlappingCircles',
-        tint: '#8B5CF6',
+        tint: 'purple',
         ready: true,
       },
       {
@@ -40,7 +40,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Estimate 17 human body skeletal keypoints',
         model: 'YOLO26 Pose',
         iconName: 'person',
-        tint: '#059669',
+        tint: 'green',
         ready: true,
       },
       {
@@ -49,7 +49,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Detect and read multilingual text in photos',
         model: 'PaddleOCR PP-OCRv6',
         iconName: 'textDoc',
-        tint: '#EA580C',
+        tint: 'orange',
         ready: true,
       },
       {
@@ -58,7 +58,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Transform photos into artistic paintings',
         model: 'Candy Style',
         iconName: 'palette',
-        tint: '#D946EF',
+        tint: 'pink',
         ready: true,
       },
       {
@@ -67,7 +67,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Locate and classify multiple objects in photos',
         model: 'SSDLite MobileNetV3',
         iconName: 'scan',
-        tint: '#2A47FF',
+        tint: 'blue',
         ready: true,
       },
       {
@@ -76,7 +76,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Segment objects by class with pixel-level masks',
         model: 'DeepLabV3 ResNet50',
         iconName: 'splitMask',
-        tint: '#10B981',
+        tint: 'red',
         ready: true,
       },
       {
@@ -85,7 +85,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Identify 1,000 object categories with confidence',
         model: 'EfficientNetV2-S',
         iconName: 'eye',
-        tint: '#0284C7',
+        tint: 'cyan',
         ready: true,
       },
     ],
@@ -99,7 +99,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Generate synthetic imagery from natural language prompts',
         model: 'SDXS 512 DreamShaper',
         iconName: 'sparkle',
-        tint: '#EC4899',
+        tint: 'pink',
         ready: false,
       },
       {
@@ -108,7 +108,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Interactive conversational assistant with on-device LLMs',
         model: 'Llama 3.2 1B',
         iconName: 'chat',
-        tint: '#8B5CF6',
+        tint: 'purple',
         ready: false,
       },
     ],
@@ -122,7 +122,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Rank text queries against images with CLIP',
         model: 'CLIP ViT-B/32',
         iconName: 'embeddings',
-        tint: '#6366F1',
+        tint: 'blue',
         ready: false,
       },
     ],
@@ -136,7 +136,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Multi-lingual automatic speech recognition',
         model: 'Whisper Tiny',
         iconName: 'mic',
-        tint: '#F59E0B',
+        tint: 'orange',
         ready: false,
       },
       {
@@ -145,7 +145,30 @@ const SECTIONS: Section[] = [
         subtitle: 'Expressive neural voice synthesis',
         model: 'Kokoro 82M',
         iconName: 'audio',
-        tint: '#E11D48',
+        tint: 'red',
+        ready: false,
+      },
+      {
+        href: '/voice-activity-detection',
+        title: 'Voice Activity Detection',
+        subtitle: 'Detect speech segments in real-time audio streams',
+        model: 'FSMN VAD',
+        iconName: 'pulse',
+        tint: 'green',
+        ready: false,
+      },
+    ],
+  },
+  {
+    title: 'Natural Language Processing',
+    tasks: [
+      {
+        href: '/privacy-filter',
+        title: 'Privacy Filter',
+        subtitle: 'Detect and redact personally identifiable information in text',
+        model: 'PII Detection',
+        iconName: 'shield',
+        tint: 'red',
         ready: false,
       },
     ],
@@ -170,7 +193,7 @@ export default function Home() {
       {/* Header Block */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
-          <Logo size={42} />
+          <Logo size={32} />
           <View style={styles.brandText}>
             <Text style={[styles.title, { color: colors.text }]}>React Native ExecuTorch</Text>
             <View style={styles.galleryBadgeRow}>
@@ -180,8 +203,8 @@ export default function Home() {
         </View>
         <Text style={[styles.subtitle, { color: colors.textDim }]}>
           Explore on-device machine learning with React Native ExecuTorch. Every task runs entirely
-          on your phone — no network, full privacy. Try each model live and see how fast on-device
-          inference really is.
+          on your phone — no data leaves the device. Models are downloaded on first use, then run
+          fully offline. Try each model live and see how fast on-device inference really is.
         </Text>
       </View>
 
@@ -204,9 +227,11 @@ export default function Home() {
 }
 
 function TaskCard({ task }: { task: Task }) {
-  const { colors } = useTheme();
+  const { colors, scheme } = useTheme();
   const router = useRouter();
   const isAvailable = task.ready !== false;
+  const tintKey = scheme === 'dark' ? (`${task.tint}Dark` as keyof typeof tints) : task.tint;
+  const tint = tints[tintKey] ?? tints[task.tint];
 
   return (
     <Pressable
@@ -230,14 +255,14 @@ function TaskCard({ task }: { task: Task }) {
         style={[
           styles.iconTile,
           isAvailable
-            ? { backgroundColor: task.tint + '14', borderColor: task.tint + '30' }
+            ? { backgroundColor: tint + '14', borderColor: tint + '30' }
             : { backgroundColor: colors.surfaceSubtle, borderColor: colors.borderSubtle },
         ]}
       >
         <Icon
           name={task.iconName}
           size={22}
-          color={isAvailable ? task.tint : colors.textSecondary}
+          color={isAvailable ? tint : colors.textSecondary}
           strokeWidth={2}
         />
       </View>
@@ -307,10 +332,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     marginTop: spacing.xs,
+    textAlign: 'justify',
   },
   sectionHeader: { gap: 2, paddingHorizontal: 2 },
   sectionTitle: { fontSize: 15, fontWeight: '700', letterSpacing: -0.2 },
-  sectionDesc: { fontSize: 12 },
   card: {
     flexDirection: 'row',
     alignItems: 'center',

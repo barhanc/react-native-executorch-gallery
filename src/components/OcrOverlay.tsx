@@ -10,7 +10,7 @@ import {
 import { Canvas, Path, Skia } from '@shopify/react-native-skia';
 import type { OcrDetection } from 'react-native-executorch';
 import type { ViewportTransform } from '@/components/PhotoPicker';
-import { radius, spacing } from '@/theme';
+import { radius, spacing, overlay } from '@/theme';
 
 export interface OcrOverlayProps {
   /** Array of recognized text detections and quadrilateral boundaries. */
@@ -158,12 +158,12 @@ export function OcrOverlay({ detections, transform }: OcrOverlayProps) {
             <React.Fragment key={`quad-draw-${idx}`}>
               <Path
                 path={p}
-                color={isSelected ? 'rgba(42, 71, 255, 0.25)' : 'rgba(42, 71, 255, 0.08)'}
+                color={isSelected ? overlay.tintSoft : overlay.tintFaint}
                 style="fill"
               />
               <Path
                 path={p}
-                color="#2A47FF"
+                color={overlay.tint}
                 style="stroke"
                 strokeWidth={isSelected ? 2 : 1.25}
                 strokeCap="round"
@@ -211,17 +211,17 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   hintPill: {
-    backgroundColor: 'rgba(10, 16, 32, 0.76)',
+    backgroundColor: overlay.bg,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: radius.pill,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.16)',
+    borderColor: overlay.border,
   },
   hintText: {
-    color: '#D0E2FF',
-    fontSize: 11,
-    fontWeight: '500',
+    color: overlay.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
     letterSpacing: 0.1,
   },
   tooltipAnchor: {
@@ -229,12 +229,12 @@ const styles = StyleSheet.create({
     zIndex: 999,
   },
   tooltipCard: {
-    backgroundColor: 'rgba(10, 16, 32, 0.88)',
+    backgroundColor: overlay.bgStrong,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm + 2,
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.16)',
+    borderColor: overlay.border,
     gap: spacing.xs,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
@@ -249,20 +249,20 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
   },
   headerTitle: {
-    color: '#94A3B8',
+    color: overlay.textMuted,
     fontSize: 10,
     fontWeight: '500',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
   headerConf: {
-    color: '#93C5FD',
+    color: overlay.tint,
     fontSize: 11,
     fontWeight: '500',
     fontVariant: ['tabular-nums'],
   },
   tooltipBodyText: {
-    color: '#FFFFFF',
+    color: overlay.textPrimary,
     fontSize: 13,
     fontWeight: '400',
     lineHeight: 18,

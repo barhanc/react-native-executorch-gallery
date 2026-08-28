@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { Classification } from 'react-native-executorch';
-import { radius, spacing } from '@/theme';
+import { radius, spacing, overlay } from '@/theme';
 
 export interface ClassificationOverlayProps {
   /** Top classification prediction entries returned by the model. */
@@ -39,9 +39,7 @@ export function ClassificationOverlay({ results }: ClassificationOverlayProps) {
                     styles.barFill,
                     {
                       width: `${Math.max(pct, 4)}%`,
-                      backgroundColor: isTop
-                        ? 'rgba(42, 71, 255, 0.25)'
-                        : 'rgba(255, 255, 255, 0.06)',
+                      backgroundColor: isTop ? overlay.tintSoft : 'rgba(255, 255, 255, 0.06)',
                     },
                   ]}
                 />
@@ -70,10 +68,10 @@ const styles = StyleSheet.create({
     right: spacing.md,
   },
   card: {
-    backgroundColor: 'rgba(10, 16, 32, 0.76)',
+    backgroundColor: overlay.bg,
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.16)',
+    borderColor: overlay.border,
     padding: spacing.md,
     gap: spacing.sm,
   },
@@ -81,7 +79,7 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
   },
   headerTitle: {
-    color: '#94A3B8',
+    color: overlay.textMuted,
     fontSize: 11,
     fontWeight: '600',
     letterSpacing: 0.8,
@@ -118,27 +116,27 @@ const styles = StyleSheet.create({
     width: 16,
   },
   rankTextTop: {
-    color: '#93C5FD',
+    color: overlay.tint,
   },
   labelText: {
     flex: 1,
-    color: '#E2E8F0',
+    color: overlay.textSecondary,
     fontSize: 13,
     fontWeight: '400',
     letterSpacing: 0.1,
   },
   labelTextTop: {
-    color: '#FFFFFF',
+    color: overlay.textPrimary,
     fontWeight: '600',
   },
   pctText: {
-    color: '#94A3B8',
+    color: overlay.textMuted,
     fontSize: 12,
     fontWeight: '500',
     fontVariant: ['tabular-nums'],
   },
   pctTextTop: {
-    color: '#93C5FD',
+    color: overlay.tint,
     fontWeight: '700',
   },
 });

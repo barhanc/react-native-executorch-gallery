@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { radius, spacing } from '@/theme';
+import { radius, spacing, overlay } from '@/theme';
 
 export interface StyleTransferOverlayProps {
   /** Whether the user is actively pressing the compare toggle to view the original. */
@@ -46,17 +46,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: spacing.md,
     alignSelf: 'center',
-    backgroundColor: 'rgba(0, 26, 114, 0.88)',
+    backgroundColor: overlay.bg,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 3,
+    paddingVertical: spacing.xs,
     borderRadius: radius.pill,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
+    borderWidth: 1,
+    borderColor: overlay.border,
   },
   compareText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.2,
+    color: overlay.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.1,
   },
 });

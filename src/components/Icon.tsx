@@ -26,7 +26,9 @@ export type IconName =
   | 'send'
   | 'close'
   | 'trash'
-  | 'eye';
+  | 'eye'
+  | 'pulse'
+  | 'shield';
 
 const ICON_MAP: Record<IconName, keyof typeof Ionicons.glyphMap> = {
   scan: 'scan-outline',
@@ -44,7 +46,7 @@ const ICON_MAP: Record<IconName, keyof typeof Ionicons.glyphMap> = {
   layers: 'layers-outline',
   person: 'person-outline',
   brush: 'brush-outline',
-  wand: 'wand-outline',
+  wand: 'color-wand-outline',
   shapes: 'shapes-outline',
   splitMask: 'color-filter-outline',
   overlappingCircles: 'copy-outline',
@@ -53,6 +55,8 @@ const ICON_MAP: Record<IconName, keyof typeof Ionicons.glyphMap> = {
   close: 'close',
   trash: 'trash-outline',
   eye: 'eye-outline',
+  pulse: 'pulse-outline',
+  shield: 'shield-outline',
 };
 
 export interface IconProps {
