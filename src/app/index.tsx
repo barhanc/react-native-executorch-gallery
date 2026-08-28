@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   sectionHeader: { gap: 2, paddingHorizontal: 2 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', letterSpacing: -0.2 },
+  sectionTitle: { fontSize: 15, fontWeight: '600', letterSpacing: -0.2 },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardTitle: { fontSize: 15, fontWeight: '700' },
+  cardTitle: { fontSize: 15, fontWeight: '500' },
   cardSubtitle: { fontSize: 12, lineHeight: 16 },
   modelTag: {
     alignSelf: 'flex-start',

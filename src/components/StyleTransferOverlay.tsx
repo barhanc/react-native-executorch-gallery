@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   compareText: {
     color: overlay.textSecondary,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '500',
     letterSpacing: 0.1,
   },
 });

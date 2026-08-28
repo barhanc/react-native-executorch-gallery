@@ -79,6 +79,20 @@ export const tints = {
   pinkDark: '#f472b6',
 } as const;
 
+/** Accent color for model-name capsules that stand out from the blue theme. */
+export const modelTag = {
+  light: {
+    fg: '#782AEB',
+    bg: 'rgba(120, 42, 235, 0.10)',
+    border: 'rgba(120, 42, 235, 0.28)',
+  },
+  dark: {
+    fg: '#B07EFF',
+    bg: 'rgba(176, 126, 255, 0.12)',
+    border: 'rgba(176, 126, 255, 0.30)',
+  },
+} as const;
+
 export const spacing = {
   xxs: 2,
   xs: 4,

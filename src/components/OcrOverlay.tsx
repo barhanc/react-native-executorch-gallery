@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   hintText: {
     color: overlay.textSecondary,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '500',
     letterSpacing: 0.1,
   },
   tooltipAnchor: {

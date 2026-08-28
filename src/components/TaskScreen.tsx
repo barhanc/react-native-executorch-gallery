@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'rea
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 
-import { radius, spacing, useTheme } from '@/theme';
+import { radius, spacing, useTheme, modelTag } from '@/theme';
 import { Icon } from '@/components/Icon';
 
 /** Loading, download progress, and error state contract shared by task hooks. */
@@ -62,8 +62,9 @@ export function TaskScreen({
   onDeleteModel,
   children,
 }: TaskScreenProps) {
-  const { colors } = useTheme();
+  const { colors, scheme } = useTheme();
   const insets = useSafeAreaInsets();
+  const tag = modelTag[scheme];
 
   const isExecutingRef = React.useRef(false);
 
@@ -105,13 +106,8 @@ export function TaskScreen({
       <View style={styles.headerBlock}>
         <View style={styles.headerRow}>
           {subtitle ? (
-            <View
-              style={[
-                styles.badge,
-                { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
-              ]}
-            >
-              <Text style={[styles.badgeText, { color: colors.textSecondary }]}>{subtitle}</Text>
+            <View style={[styles.badge, { backgroundColor: tag.bg, borderColor: tag.border }]}>
+              <Text style={[styles.badgeText, { color: tag.fg }]}>{subtitle}</Text>
             </View>
           ) : null}
 
@@ -407,7 +403,7 @@ const styles = StyleSheet.create({
   },
   latencyText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '600',
     fontVariant: ['tabular-nums'],
   },
   contentBody: {

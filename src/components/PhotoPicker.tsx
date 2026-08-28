@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
   placeholderTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '500',
     letterSpacing: -0.2,
   },
   placeholderSub: {
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   },
   pickLabel: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '600',
     letterSpacing: 0.1,
   },
 });

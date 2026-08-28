@@ -1,8 +1,8 @@
-# React Native ExecuTorch Gallery
-
 <div align="center">
-  <img src="https://github.com/software-mansion/react-native-executorch/blob/main/docs/static/img/logo-hero.svg" alt="RNE Logo" width="25%">
+  <img src="https://github.com/software-mansion/react-native-executorch/blob/main/docs/static/img/logo-vertical.svg" alt="React Native ExecuTorch Logo" width="200">
 </div>
+
+# React Native ExecuTorch Gallery
 
 **React Native ExecuTorch Gallery** is a showcase app demonstrating on-device
 machine learning tasks built with

@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   labelTextTop: {
     color: overlay.textPrimary,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   pctText: {
     color: overlay.textMuted,
@@ -137,6 +137,6 @@ const styles = StyleSheet.create({
   },
   pctTextTop: {
     color: overlay.tint,
-    fontWeight: '700',
+    fontWeight: '600',
   },
 });
