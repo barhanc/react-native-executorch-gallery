@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { AlphaType, ColorType, Skia, type SkImage } from '@shopify/react-native-skia';
 import { models, useSemanticSegmenter } from 'react-native-executorch';
 
@@ -13,15 +13,10 @@ function SemanticSegmentationTask() {
   const [latency, setLatency] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const isProcessingRef = useRef(false);
-
-  const segmenter = useSemanticSegmenter(
-    models.semanticSegmentation.DEEPLAB_V3_MOBILENET_V3_LARGE.DEFAULT
-  );
+  const segmenter = useSemanticSegmenter(models.semanticSegmentation.DEEPLAB_V3_RESNET50.DEFAULT);
 
   const run = async () => {
-    if (isProcessingRef.current || busy || !image || !segmenter.segment) return;
-    isProcessingRef.current = true;
+    if (busy || !image || !segmenter.segment) return;
     setBusy(true);
     setLatency(null);
     setError(null);
@@ -45,7 +40,6 @@ function SemanticSegmentationTask() {
     } catch (err: any) {
       setError(err?.message ?? String(err));
     } finally {
-      isProcessingRef.current = false;
       setBusy(false);
     }
   };
@@ -53,7 +47,7 @@ function SemanticSegmentationTask() {
   return (
     <TaskScreen
       title="Semantic Segmentation"
-      subtitle="DeepLabV3 MobileNetV3"
+      subtitle="DeepLabV3 ResNet50"
       status={{ ...segmenter, error: error || segmenter.error }}
       canRun={!!image && segmenter.isReady && !busy}
       busy={busy}

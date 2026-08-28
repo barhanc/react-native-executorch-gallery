@@ -67,7 +67,7 @@ const SECTIONS: Section[] = [
         href: '/semantic-segmentation',
         title: 'Semantic Segmentation',
         subtitle: 'Segment objects by class with pixel-level masks',
-        model: 'DeepLabV3 MobileNetV3',
+        model: 'DeepLabV3 ResNet50',
         iconName: 'splitMask',
         tint: '#10B981',
         ready: true,
