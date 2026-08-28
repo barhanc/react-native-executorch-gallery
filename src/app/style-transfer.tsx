@@ -6,7 +6,7 @@ import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { StyleTransferOverlay } from '@/components/StyleTransferOverlay';
 import { TaskScreen } from '@/components/TaskScreen';
 import { bufferToSkImage } from '@/lib/image';
-import { useDisposableImage } from '@/lib/useDisposableImage';
+import { useDisposableImage } from '@/hooks/useDisposableImage';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function StyleTransferTask() {

@@ -75,7 +75,7 @@ export function PrivacyFilterResults({ text, entities }: PrivacyFilterResultsPro
 
       <View style={styles.results}>
         <Text style={[styles.resultsTitle, { color: colors.textMuted }]}>
-          Detected {entities.length} entity{entities.length === 1 ? '' : 's'}
+          Detected {entities.length} {entities.length === 1 ? 'entity' : 'entities'}
         </Text>
         {entities.map((entity, i) => (
           <View

@@ -6,7 +6,7 @@ import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 import { bufferToSkImage } from '@/lib/image';
-import { useDisposableImage } from '@/lib/useDisposableImage';
+import { useDisposableImage } from '@/hooks/useDisposableImage';
 
 function SemanticSegmentationTask() {
   const [busy, setBusy] = useState(false);

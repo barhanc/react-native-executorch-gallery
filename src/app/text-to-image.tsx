@@ -6,7 +6,7 @@ import { PromptInput } from '@/components/PromptInput';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
 import { bufferToSkImage } from '@/lib/image';
-import { useDisposableImage } from '@/lib/useDisposableImage';
+import { useDisposableImage } from '@/hooks/useDisposableImage';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 const SUGGESTIONS = [
