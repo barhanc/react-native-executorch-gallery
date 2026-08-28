@@ -46,7 +46,6 @@ const SKELETON_PAIRS: [string, string][] = [
  * @returns Bounding box, connecting skeleton lines, and joint landmark circles.
  */
 export function KeypointOverlay({ detections, transform }: KeypointOverlayProps) {
-  if (detections.length === 0) return null;
   const { scale, offsetX, offsetY } = transform;
 
   const { bonePath, jointOuterPath, jointInnerPath } = React.useMemo(() => {
@@ -78,6 +77,10 @@ export function KeypointOverlay({ detections, transform }: KeypointOverlayProps)
 
     return { bonePath: bones, jointOuterPath: outer, jointInnerPath: inner };
   }, [detections, offsetX, offsetY, scale]);
+
+  // Placed after every hook: bailing out earlier changes the hook count between
+  // renders and throws once detections arrive.
+  if (detections.length === 0) return null;
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">

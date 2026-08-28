@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { AlphaType, ColorType, Skia, type SkImage } from '@shopify/react-native-skia';
 import { models, useSemanticSegmenter } from 'react-native-executorch';
 
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+import { bufferToSkImage } from '@/lib/image';
+import { useDisposableImage } from '@/lib/useDisposableImage';
 
 function SemanticSegmentationTask() {
   const [busy, setBusy] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
-  const [segmentationImage, setSegmentationImage] = useState<SkImage | null>(null);
+  const [segmentationImage, setSegmentationImage] = useDisposableImage();
   const [latency, setLatency] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,14 +26,9 @@ function SemanticSegmentationTask() {
       const { buffer: outBuffer } = await segmenter.segment(image.buffer);
       setLatency(Date.now() - t0);
 
-      const outData = Skia.Data.fromBytes(outBuffer.data);
-      const info = {
-        width: image.width,
-        height: image.height,
-        colorType: ColorType.RGBA_8888,
-        alphaType: AlphaType.Premul,
-      };
-      const nextImage = Skia.Image.MakeImage(info, outData, image.width * 4);
+      // Decoded here, once, rather than in render: the mask is a full-resolution
+      // RGBA buffer and each decode charges its size against the JS heap.
+      const nextImage = bufferToSkImage(outBuffer);
       if (!nextImage) {
         throw new Error('Failed to create overlay image from output data');
       }

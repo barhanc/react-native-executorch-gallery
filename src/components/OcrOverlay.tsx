@@ -61,7 +61,6 @@ export function OcrOverlay({ detections, transform }: OcrOverlayProps) {
     setSelectedIndex(null);
   }, [detections]);
 
-  if (detections.length === 0) return null;
   const { scale, offsetX, offsetY } = transform;
 
   // Build Skia quadrilateral polygon paths
@@ -137,6 +136,10 @@ export function OcrOverlay({ detections, transform }: OcrOverlayProps) {
       bottom: isNearTop ? undefined : (containerSize.height || 400) - minY + 8,
     };
   }, [selectedIndex, detections, offsetX, offsetY, scale, containerSize]);
+
+  // Placed after every hook: bailing out earlier changes the hook count between
+  // renders and throws once detections arrive.
+  if (detections.length === 0) return null;
 
   return (
     <Pressable onPress={handlePress} onLayout={handleLayout} style={StyleSheet.absoluteFill}>

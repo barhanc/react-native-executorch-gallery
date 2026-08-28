@@ -1,16 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import {
-  AlphaType,
-  BlendColor,
-  Canvas,
-  ColorType,
-  Image as SkiaImage,
-  Skia,
-  type SkImage,
-} from '@shopify/react-native-skia';
+import { BlendColor, Canvas, Image as SkiaImage, type SkImage } from '@shopify/react-native-skia';
 import type { InstanceSegmentationResult } from 'react-native-executorch';
 import type { ViewportTransform } from '@/components/PhotoPicker';
+import { bufferToSkImage } from '@/lib/image';
 import { radius } from '@/theme';
 
 export interface InstanceSegmentationOverlayProps {
@@ -46,13 +39,10 @@ const MASK_STROKE_COLORS = [
   '#E11D48',
 ];
 
-interface DecodedMaskInstance {
-  maskImage: SkImage | null;
-  box: { xmin: number; ymin: number; xmax: number; ymax: number };
-  label: string;
-  confidence: number;
-  colorStr: string;
-  strokeColor: string;
+/** Decoded mask images together with the results they were decoded from. */
+interface DecodedMasks {
+  source: InstanceSegmentationResult<'xyxy', string>[];
+  images: (SkImage | null)[];
 }
 
 /**
@@ -70,41 +60,31 @@ export function InstanceSegmentationOverlay({
   imageHeight,
   transform,
 }: InstanceSegmentationOverlayProps) {
-  if (instances.length === 0 || imageWidth === 0 || imageHeight === 0) return null;
-  const { scale, offsetX, offsetY } = transform;
+  const [decoded, setDecoded] = React.useState<DecodedMasks | null>(null);
 
-  const decodedMasks: DecodedMaskInstance[] = React.useMemo(() => {
-    return instances.map((inst, i) => {
-      const col = MASK_COLORS[i % MASK_COLORS.length]!;
-      const colorStr = `rgba(${col.r}, ${col.g}, ${col.b}, ${col.a / 255})`;
-      const strokeColor = MASK_STROKE_COLORS[i % MASK_STROKE_COLORS.length]!;
-      let maskImage: SkImage | null = null;
-
+  // Decoding allocates one native copy of every mask and charges its size
+  // against the JS heap, so it happens once per result set in an effect rather
+  // than on every render. The cleanup frees the outgoing set after React has
+  // committed a tree that no longer draws it.
+  React.useEffect(() => {
+    const images = instances.map((inst) => {
       try {
-        if (inst.mask && inst.mask.data && inst.mask.width > 0 && inst.mask.height > 0) {
-          const outData = Skia.Data.fromBytes(inst.mask.data);
-          const info = {
-            width: inst.mask.width,
-            height: inst.mask.height,
-            colorType: ColorType.Alpha_8,
-            alphaType: AlphaType.Premul,
-          };
-          maskImage = Skia.Image.MakeImage(info, outData, inst.mask.width);
-        }
+        return inst.mask ? bufferToSkImage(inst.mask) : null;
       } catch (err) {
         console.warn('Failed to decode instance mask image:', err);
+        return null;
       }
-
-      return {
-        maskImage,
-        box: inst.box,
-        label: inst.label,
-        confidence: inst.confidence,
-        colorStr,
-        strokeColor,
-      };
     });
+    setDecoded({ source: instances, images });
+
+    return () => images.forEach((image) => image?.dispose());
   }, [instances]);
+
+  const { scale, offsetX, offsetY } = transform;
+  // Ignore masks left over from a previous result set while the effect catches up.
+  const maskImages = decoded?.source === instances ? decoded.images : null;
+
+  if (instances.length === 0 || imageWidth === 0 || imageHeight === 0) return null;
 
   const targetWidth = imageWidth * scale;
   const targetHeight = imageHeight * scale;
@@ -113,31 +93,36 @@ export function InstanceSegmentationOverlay({
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
       {/* Full-Image Skia Color-Tinted Instance Masks */}
       <Canvas style={StyleSheet.absoluteFill}>
-        {decodedMasks.map((item, idx) => {
-          if (!item.maskImage) return null;
+        {maskImages?.map((maskImage, idx) => {
+          if (!maskImage) return null;
+          const color = MASK_COLORS[idx % MASK_COLORS.length]!;
 
           return (
             <SkiaImage
               key={`mask-${idx}`}
-              image={item.maskImage}
+              image={maskImage}
               fit="fill"
               x={offsetX}
               y={offsetY}
               width={targetWidth}
               height={targetHeight}
             >
-              <BlendColor color={item.colorStr} mode="srcIn" />
+              <BlendColor
+                color={`rgba(${color.r}, ${color.g}, ${color.b}, ${color.a / 255})`}
+                mode="srcIn"
+              />
             </SkiaImage>
           );
         })}
       </Canvas>
 
       {/* Bounding Boxes & Confidence Tags */}
-      {decodedMasks.map((item, idx) => {
-        const left = Math.round(offsetX + item.box.xmin * scale);
-        const top = Math.round(offsetY + item.box.ymin * scale);
-        const width = Math.round((item.box.xmax - item.box.xmin) * scale);
-        const height = Math.round((item.box.ymax - item.box.ymin) * scale);
+      {instances.map((instance, idx) => {
+        const strokeColor = MASK_STROKE_COLORS[idx % MASK_STROKE_COLORS.length]!;
+        const left = Math.round(offsetX + instance.box.xmin * scale);
+        const top = Math.round(offsetY + instance.box.ymin * scale);
+        const width = Math.round((instance.box.xmax - instance.box.xmin) * scale);
+        const height = Math.round((instance.box.ymax - instance.box.ymin) * scale);
         const isNearTop = top < 24;
 
         return (
@@ -150,7 +135,7 @@ export function InstanceSegmentationOverlay({
                 top,
                 width,
                 height,
-                borderColor: item.strokeColor,
+                borderColor: strokeColor,
               },
             ]}
           >
@@ -158,14 +143,14 @@ export function InstanceSegmentationOverlay({
               style={[
                 styles.instanceTag,
                 {
-                  backgroundColor: item.strokeColor,
+                  backgroundColor: strokeColor,
                   top: isNearTop ? 2 : -22,
                   left: isNearTop ? 2 : -1,
                 },
               ]}
             >
               <Text style={styles.instanceTagText}>
-                {item.label} {Math.round(item.confidence * 100)}%
+                {instance.label} {Math.round(instance.confidence * 100)}%
               </Text>
             </View>
           </View>
