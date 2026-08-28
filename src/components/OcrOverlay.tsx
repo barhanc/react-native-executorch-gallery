@@ -10,7 +10,7 @@ import {
 import { Canvas, Path, Skia } from '@shopify/react-native-skia';
 import type { OcrDetection } from 'react-native-executorch';
 import type { ViewportTransform } from '@/components/PhotoPicker';
-import { radius, spacing, overlay } from '@/theme';
+import { borderWidth, radius, spacing, overlay } from '@/theme';
 
 export interface OcrOverlayProps {
   /** Array of recognized text detections and quadrilateral boundaries. */
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: radius.pill,
-    borderWidth: 1,
+    borderWidth,
     borderColor: overlay.border,
   },
   hintText: {
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm + 2,
     borderRadius: radius.md,
-    borderWidth: 1,
+    borderWidth,
     borderColor: overlay.border,
     gap: spacing.xs,
     shadowColor: '#000',

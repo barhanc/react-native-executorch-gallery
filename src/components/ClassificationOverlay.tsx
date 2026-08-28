@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { Classification } from 'react-native-executorch';
-import { radius, spacing, overlay } from '@/theme';
+import { borderWidth, radius, spacing, overlay } from '@/theme';
 
 export interface ClassificationOverlayProps {
   /** Top classification prediction entries returned by the model. */
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: overlay.bg,
     borderRadius: radius.md,
-    borderWidth: 1,
+    borderWidth,
     borderColor: overlay.border,
     padding: spacing.md,
     gap: spacing.sm,

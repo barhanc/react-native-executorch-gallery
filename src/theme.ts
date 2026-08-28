@@ -1,4 +1,4 @@
-import { useColorScheme } from 'react-native';
+import { StyleSheet, useColorScheme } from 'react-native';
 
 /**
  * Polished design tokens for ExecuTorch Gallery.
@@ -17,6 +17,7 @@ const palette = {
     textDim: '#6676AA',
     textMuted: '#919FCF',
     accent: '#2A47FF',
+    onAccent: '#FFFFFF',
     accentSoft: '#EEF0FF',
     accentBorder: '#D0E2FF',
     danger: '#FF6259',
@@ -38,6 +39,7 @@ const palette = {
     textDim: '#919FCF',
     textMuted: '#6676AA',
     accent: '#4B6CF4',
+    onAccent: '#FFFFFF',
     accentSoft: '#18244D',
     accentBorder: '#2E418A',
     danger: '#FF6259',
@@ -79,6 +81,18 @@ export const tints = {
   pinkDark: '#f472b6',
 } as const;
 
+/** Tinted background + text color pairs for PII entity categories. */
+export const piiColors = [
+  { bg: 'rgba(229, 72, 77, 0.16)', fg: '#E5484D' }, // red
+  { bg: 'rgba(247, 107, 21, 0.16)', fg: '#F76B15' }, // orange
+  { bg: 'rgba(245, 165, 36, 0.16)', fg: '#F5A524' }, // amber
+  { bg: 'rgba(48, 164, 108, 0.16)', fg: '#30A46C' }, // green
+  { bg: 'rgba(18, 165, 148, 0.16)', fg: '#12A594' }, // teal
+  { bg: 'rgba(62, 99, 221, 0.16)', fg: '#3E63DD' }, // blue
+  { bg: 'rgba(110, 86, 207, 0.16)', fg: '#6E56CF' }, // violet
+  { bg: 'rgba(214, 64, 159, 0.16)', fg: '#D6409F' }, // pink
+] as const;
+
 /** Accent color for model-name capsules that stand out from the blue theme. */
 export const modelTag = {
   light: {
@@ -112,6 +126,9 @@ export const radius = {
   xl: 26,
   pill: 999,
 } as const;
+
+/** Uniform border width for surface cards, badges, rows, and overlay cards. */
+export const borderWidth = 1;
 
 export type ThemeColors = typeof palette.light;
 

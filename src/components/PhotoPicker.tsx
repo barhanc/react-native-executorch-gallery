@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Canvas, Image as SkiaImage, useImage, type SkImage } from '@shopify/react-native-skia';
 import type { ImageBuffer } from 'react-native-executorch/cv';
 
-import { radius, spacing, useTheme } from '@/theme';
+import { borderWidth, radius, spacing, useTheme } from '@/theme';
 import { pickImage, skImageToBuffer } from '@/lib/image';
 import { Icon, type IconName } from '@/components/Icon';
 
@@ -220,13 +220,13 @@ function PickButton({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: spacing.sm,
+    gap: spacing.md,
     minHeight: 0,
   },
   viewport: {
     flex: 1,
     borderRadius: radius.lg,
-    borderWidth: 1.5,
+    borderWidth,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    borderWidth: 1.5,
+    borderWidth,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.xs,
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs + 2,
     paddingVertical: spacing.sm + 1,
     borderRadius: radius.md,
-    borderWidth: 1,
+    borderWidth,
   },
   pickLabel: {
     fontSize: 13,

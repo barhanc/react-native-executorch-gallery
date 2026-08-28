@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { radius, spacing, useTheme, tints } from '@/theme';
+import { borderWidth, radius, spacing, useTheme, tints } from '@/theme';
 import { Icon, type IconName } from '@/components/Icon';
 import { Logo } from '@/components/Logo';
 
@@ -166,10 +166,10 @@ const SECTIONS: Section[] = [
         href: '/privacy-filter',
         title: 'Privacy Filter',
         subtitle: 'Detect and redact personally identifiable information in text',
-        model: 'PII Detection',
+        model: 'OpenAI PII Detector',
         iconName: 'shield',
-        tint: 'red',
-        ready: false,
+        tint: 'green',
+        ready: true,
       },
     ],
   },
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.md,
     borderRadius: radius.lg,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth,
   },
   cardBody: { flex: 1, gap: 3 },
   cardHeaderRow: {
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: radius.md,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -367,14 +367,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xs + 2,
     paddingVertical: 2,
     borderRadius: radius.xs,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth,
   },
   modelText: { fontSize: 10, fontWeight: '600', letterSpacing: 0.1 },
   soonBadge: {
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: radius.pill,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth,
   },
   soonText: { fontSize: 10, fontWeight: '600', textTransform: 'uppercase' },
 });

@@ -1,9 +1,19 @@
 import React, { ReactNode } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 
-import { radius, spacing, useTheme, modelTag } from '@/theme';
+import { RunButton } from '@/components/RunButton';
+import { borderWidth, radius, spacing, useTheme, modelTag } from '@/theme';
 import { Icon } from '@/components/Icon';
 
 /** Loading, download progress, and error state contract shared by task hooks. */
@@ -37,6 +47,8 @@ export interface TaskScreenProps {
   meta?: string;
   /** Optional handler to delete/clear downloaded model weights from storage. */
   onDeleteModel?: () => Promise<void> | void;
+  /** Replace the default footer CTA with custom content (e.g. a prompt input). */
+  footer?: ReactNode;
   /** Task UI viewport content. */
   children: ReactNode;
 }
@@ -60,6 +72,7 @@ export function TaskScreen({
   runLabel = 'Run task',
   meta,
   onDeleteModel,
+  footer,
   children,
 }: TaskScreenProps) {
   const { colors, scheme } = useTheme();
@@ -81,126 +94,84 @@ export function TaskScreen({
   };
 
   return (
-    <View
-      style={[
-        styles.root,
-        {
-          backgroundColor: colors.bg,
-          paddingTop: spacing.sm,
-          paddingHorizontal: spacing.lg,
-          paddingBottom: Math.max(insets.bottom, spacing.md) + spacing.xs,
-          gap: spacing.sm + 2,
-        },
-      ]}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={insets.top + 44}
+      style={{ flex: 1 }}
     >
-      <Stack.Screen
-        options={{
-          title,
-          headerBackTitle: 'Gallery',
-          headerTintColor: colors.text,
-          headerStyle: { backgroundColor: colors.bg },
-          headerShadowVisible: false,
-        }}
-      />
+      <View
+        style={[
+          styles.root,
+          {
+            backgroundColor: colors.bg,
+            paddingTop: spacing.sm,
+            paddingHorizontal: spacing.lg,
+            paddingBottom: Math.max(insets.bottom, spacing.md) + spacing.xs,
+            gap: spacing.sm + 2,
+          },
+        ]}
+      >
+        <Stack.Screen
+          options={{
+            title,
+            headerBackTitle: 'Gallery',
+            headerTintColor: colors.text,
+            headerStyle: { backgroundColor: colors.bg },
+            headerShadowVisible: false,
+          }}
+        />
 
-      <View style={styles.headerBlock}>
-        <View style={styles.headerRow}>
-          {subtitle ? (
-            <View style={[styles.badge, { backgroundColor: tag.bg, borderColor: tag.border }]}>
-              <Text style={[styles.badgeText, { color: tag.fg }]}>{subtitle}</Text>
-            </View>
-          ) : null}
+        <View style={styles.headerBlock}>
+          <View style={styles.headerRow}>
+            {subtitle ? (
+              <View style={[styles.badge, { backgroundColor: tag.bg, borderColor: tag.border }]}>
+                <Text style={[styles.badgeText, { color: tag.fg }]}>{subtitle}</Text>
+              </View>
+            ) : null}
 
-          {onDeleteModel && status.isReady ? (
-            <Pressable
-              onPress={() => {
-                Alert.alert(
-                  'Delete Model Weights',
-                  'Delete downloaded model weights from device storage to free up disk space?',
-                  [
-                    { text: 'Cancel', style: 'cancel' },
-                    {
-                      text: 'Delete',
-                      style: 'destructive',
-                      onPress: onDeleteModel,
-                    },
-                  ]
-                );
-              }}
-              style={({ pressed }) => [
-                styles.deleteBadge,
-                {
-                  backgroundColor: colors.surfaceSubtle,
-                  borderColor: colors.border,
-                  opacity: pressed ? 0.6 : 1,
-                },
-              ]}
-            >
-              <Icon name="trash" size={12} color={colors.danger} strokeWidth={2} />
-              <Text style={[styles.deleteText, { color: colors.danger }]}>Delete model</Text>
-            </Pressable>
-          ) : null}
-        </View>
-
-        <StatusBanner status={status} meta={meta} />
-      </View>
-
-      <View style={styles.contentBody}>{children}</View>
-
-      <View style={styles.footer}>
-        <Pressable
-          onPress={handleRunPress}
-          disabled={!canRun || busy}
-          style={({ pressed }) => [
-            styles.runButton,
-            canRun || busy
-              ? {
-                  backgroundColor: colors.accent,
-                  borderColor: colors.accentBorder,
-                  shadowColor: colors.accent,
-                  shadowOffset: { width: 0, height: 3 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 8,
-                  elevation: 4,
-                  opacity: busy ? 0.95 : pressed ? 0.85 : 1,
-                }
-              : {
-                  backgroundColor: colors.surfaceSubtle,
-                  borderColor: colors.border,
-                  opacity: 1,
-                },
-            {
-              transform: [{ scale: pressed && canRun && !busy ? 0.98 : 1 }],
-            },
-          ]}
-        >
-          {busy ? (
-            <View style={styles.buttonInner}>
-              <ActivityIndicator color="#FFFFFF" size="small" style={styles.spinner} />
-              <Text style={[styles.runLabel, { color: '#FFFFFF' }]}>Executing on-device…</Text>
-            </View>
-          ) : (
-            <View style={styles.buttonInner}>
-              {canRun ? (
-                <View style={styles.buttonIconBadge}>
-                  <Icon name="scan" size={16} color="#FFFFFF" strokeWidth={2} />
-                </View>
-              ) : null}
-              <Text
-                style={[
-                  styles.runLabel,
+            {onDeleteModel && status.isReady ? (
+              <Pressable
+                onPress={() => {
+                  Alert.alert(
+                    'Delete Model Weights',
+                    'Delete downloaded model weights from device storage to free up disk space?',
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Delete',
+                        style: 'destructive',
+                        onPress: onDeleteModel,
+                      },
+                    ]
+                  );
+                }}
+                style={({ pressed }) => [
+                  styles.deleteBadge,
                   {
-                    color: canRun ? '#FFFFFF' : colors.textMuted,
+                    backgroundColor: colors.dangerSoft,
+                    borderColor: colors.danger,
+                    opacity: pressed ? 0.7 : 1,
                   },
                 ]}
               >
-                {runLabel}
-              </Text>
-            </View>
+                <Icon name="trash" size={12} color={colors.danger} strokeWidth={2} />
+                <Text style={[styles.deleteText, { color: colors.danger }]}>Delete model</Text>
+              </Pressable>
+            ) : null}
+          </View>
+
+          <StatusBanner status={status} meta={meta} />
+        </View>
+
+        <View style={styles.contentBody}>{children}</View>
+
+        <View style={styles.footer}>
+          {footer || (
+            <RunButton canRun={canRun} busy={busy} onPress={handleRunPress} label={runLabel} />
           )}
-        </Pressable>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -240,7 +211,7 @@ function StatusBanner({ status, meta }: { status: TaskStatus; meta?: string }) {
         style={[styles.statusCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
       >
         <View style={styles.statusLeft}>
-          <View style={[styles.dot, { backgroundColor: '#10B981' }]} />
+          <View style={[styles.dot, { backgroundColor: colors.success }]} />
           <Text style={[styles.statusText, { color: colors.textSecondary }]}>Ready</Text>
         </View>
 
@@ -302,7 +273,7 @@ function StatusBanner({ status, meta }: { status: TaskStatus; meta?: string }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  headerBlock: { gap: spacing.xs + 2 },
+  headerBlock: { gap: spacing.sm + 2 },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -313,7 +284,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm + 2,
     paddingVertical: spacing.xs,
     borderRadius: radius.pill,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth,
   },
   badgeText: { fontSize: 12, fontWeight: '500', letterSpacing: 0.1 },
   deleteBadge: {
@@ -322,18 +293,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm + 2,
     paddingVertical: spacing.xs,
     borderRadius: radius.pill,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth,
     gap: 4,
   },
   deleteText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '500',
+    letterSpacing: 0.1,
   },
   errorCard: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: radius.md,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth,
     gap: spacing.xs,
   },
   errorHeader: {
@@ -359,7 +331,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs + 3,
     borderRadius: radius.md,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth,
     minHeight: 38,
   },
   downloadCard: {
@@ -367,7 +339,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs + 4,
     borderRadius: radius.md,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth,
   },
   downloadHeader: {
     flexDirection: 'row',
@@ -412,33 +384,5 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingTop: 2,
-  },
-  runButton: {
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radius.md,
-    borderWidth: 1,
-  },
-  buttonInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs + 2,
-    height: 48,
-  },
-  buttonIconBadge: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  spinner: {
-    width: 16,
-    height: 16,
-    transform: [{ scale: 0.85 }],
-  },
-  runLabel: {
-    fontSize: 13,
-    fontWeight: '500',
-    letterSpacing: 0.1,
   },
 });
