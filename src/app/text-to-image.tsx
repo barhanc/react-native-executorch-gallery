@@ -10,6 +10,7 @@ import { TaskScreen } from '@/components/TaskScreen';
 import { bufferToSkImage } from '@/lib/image';
 import { useDisposableImage } from '@/lib/useDisposableImage';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
+import { borderWidth, radius, useTheme } from '@/theme';
 
 function TextToImageTask() {
   const [prompt, setPrompt] = useState('');
@@ -18,6 +19,7 @@ function TextToImageTask() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { colors } = useTheme();
   const textToImage = useTextToImage(models.textToImage.SDXS_512_DREAMSHAPER.DEFAULT);
 
   const run = async () => {
@@ -65,7 +67,14 @@ function TextToImageTask() {
         />
       }
     >
-      <Pressable style={styles.content} onPress={Keyboard.dismiss} accessible={false}>
+      <Pressable
+        style={[
+          styles.viewport,
+          { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+        ]}
+        onPress={Keyboard.dismiss}
+        accessible={false}
+      >
         {image ? (
           <GeneratedImage image={image} />
         ) : (
@@ -80,8 +89,14 @@ function TextToImageTask() {
 }
 
 const styles = StyleSheet.create({
-  content: {
+  viewport: {
     flex: 1,
+    borderRadius: radius.lg,
+    borderWidth,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 220,
   },
 });
 
