@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Canvas, Image as SkiaImage, useImage } from '@shopify/react-native-skia';
+import { Canvas, Image as SkiaImage, useImage, type SkImage } from '@shopify/react-native-skia';
 import type { ImageBuffer } from 'react-native-executorch/cv';
 
 import { radius, spacing, useTheme } from '@/theme';
@@ -32,6 +32,10 @@ export interface PhotoPickerProps {
   onPick: (image: PickedImage | null) => void;
   /** Optional render function for task-specific overlays (boxes, masks, landmarks). */
   renderOverlay?: (transform: ViewportTransform) => ReactNode;
+  /** Optional Skia Image overlay to render directly on the photo canvas (e.g. segmentation mask). */
+  overlayImage?: SkImage | null;
+  /** Opacity for the overlay image (default: 0.65). */
+  overlayOpacity?: number;
   /** Target width in pixels to downscale images (pass `null` to preserve full original resolution). */
   targetWidth?: number | null;
   /** Whether the model is currently processing inference over the photo. */
@@ -50,6 +54,8 @@ export interface PhotoPickerProps {
 export function PhotoPicker({
   onPick,
   renderOverlay,
+  overlayImage,
+  overlayOpacity = 0.65,
   targetWidth = 800,
   busy = false,
 }: PhotoPickerProps) {
@@ -108,6 +114,17 @@ export function PhotoPicker({
           <>
             <Canvas style={StyleSheet.absoluteFill}>
               <SkiaImage image={image} fit="contain" x={0} y={0} width={viewW} height={viewH} />
+              {overlayImage && (
+                <SkiaImage
+                  image={overlayImage}
+                  fit="contain"
+                  x={0}
+                  y={0}
+                  width={viewW}
+                  height={viewH}
+                  opacity={overlayOpacity}
+                />
+              )}
             </Canvas>
             {renderOverlay?.(transform)}
           </>

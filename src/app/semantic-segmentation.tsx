@@ -1,40 +1,51 @@
-import { useState } from 'react';
-import {
-  models,
-  useSemanticSegmenter,
-  type SemanticSegmentationResult,
-} from 'react-native-executorch';
+import { useRef, useState } from 'react';
+import { AlphaType, ColorType, Skia, type SkImage } from '@shopify/react-native-skia';
+import { models, useSemanticSegmenter } from 'react-native-executorch';
 
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
-import { SegmentationOverlay } from '@/components/SegmentationOverlay';
 import { TaskScreen } from '@/components/TaskScreen';
 
 function SemanticSegmentationTask() {
   const [busy, setBusy] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
-  const [result, setResult] = useState<SemanticSegmentationResult<string> | null>(null);
+  const [segmentationImage, setSegmentationImage] = useState<SkImage | null>(null);
   const [latency, setLatency] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const isProcessingRef = useRef(false);
 
   const segmenter = useSemanticSegmenter(
     models.semanticSegmentation.DEEPLAB_V3_MOBILENET_V3_LARGE.DEFAULT
   );
 
   const run = async () => {
-    if (!image || !segmenter.segment) return;
+    if (isProcessingRef.current || busy || !image || !segmenter.segment) return;
+    isProcessingRef.current = true;
     setBusy(true);
-    setResult(null);
     setLatency(null);
     setError(null);
     try {
       const t0 = Date.now();
-      const output = await segmenter.segment(image.buffer);
+      const { buffer: outBuffer } = await segmenter.segment(image.buffer);
       setLatency(Date.now() - t0);
-      setResult(output);
+
+      const outData = Skia.Data.fromBytes(outBuffer.data);
+      const info = {
+        width: image.width,
+        height: image.height,
+        colorType: ColorType.RGBA_8888,
+        alphaType: AlphaType.Premul,
+      };
+      const nextImage = Skia.Image.MakeImage(info, outData, image.width * 4);
+      if (!nextImage) {
+        throw new Error('Failed to create overlay image from output data');
+      }
+      setSegmentationImage(nextImage);
     } catch (err: any) {
       setError(err?.message ?? String(err));
     } finally {
+      isProcessingRef.current = false;
       setBusy(false);
     }
   };
@@ -44,7 +55,7 @@ function SemanticSegmentationTask() {
       title="Semantic Segmentation"
       subtitle="DeepLabV3 MobileNetV3"
       status={{ ...segmenter, error: error || segmenter.error }}
-      canRun={!!image && segmenter.isReady}
+      canRun={!!image && segmenter.isReady && !busy}
       busy={busy}
       onRun={run}
       runLabel="Segment Image"
@@ -52,20 +63,14 @@ function SemanticSegmentationTask() {
     >
       <PhotoPicker
         busy={busy}
+        overlayImage={segmentationImage}
+        overlayOpacity={0.65}
         onPick={(img) => {
           setImage(img);
-          setResult(null);
+          setSegmentationImage(null);
           setLatency(null);
           setError(null);
         }}
-        renderOverlay={(transform) => (
-          <SegmentationOverlay
-            result={result}
-            imageWidth={image?.width ?? 0}
-            imageHeight={image?.height ?? 0}
-            transform={transform}
-          />
-        )}
       />
     </TaskScreen>
   );
