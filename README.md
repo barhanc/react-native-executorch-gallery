@@ -1,5 +1,8 @@
 <div align="center">
-  <img src="https://github.com/software-mansion/react-native-executorch/raw/main/docs/static/img/logo-vertical-dark.svg" alt="React Native ExecuTorch Logo" width="200">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/software-mansion/react-native-executorch/raw/main/docs/static/img/logo-vertical-dark.svg">
+    <img src="https://github.com/software-mansion/react-native-executorch/raw/main/docs/static/img/logo-vertical.svg" alt="React Native ExecuTorch" width="260">
+  </picture>
 </div>
 
 # React Native ExecuTorch Gallery
