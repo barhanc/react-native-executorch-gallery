@@ -8,10 +8,12 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 
 import { borderWidth, radius, spacing, useTheme } from '@/theme';
 import { Icon } from '@/components/Icon';
+
 export interface PromptInputProps {
   /** Controlled input value. */
   value: string;
@@ -30,16 +32,19 @@ export interface PromptInputProps {
 }
 
 /**
- * Minimal, reusable prompt input that floats above the system keyboard.
+ * Minimal, reusable prompt input that floats above the system keyboard as a
+ * floating island card.
  *
- * A large rounded text field with an inline send button, pinned above the
- * keyboard via a sticky view so it stays reachable while typing. Supports
- * optional pre-configured suggestion chips that appear above the bubble. Meant
- * to be shared across prompt-driven screens (LLM chat, text-to-image, privacy
+ * The entire input — suggestion chips and text field — lives inside a single
+ * elevated, inset island card that hovers above the keyboard without covering
+ * the full screen width. Pinned above the keyboard via a transparent sticky
+ * view so it stays reachable while typing. Suggestion chips fade out
+ * gracefully at the trailing edge via a LinearGradient overlay. Meant to be
+ * shared across prompt-driven screens (LLM chat, text-to-image, privacy
  * filter, and so on).
  *
  * @param props Controlled value, edit/submit callbacks, suggestions, and state flags.
- * @returns A keyboard-aware prompt bar with optional suggestions.
+ * @returns A keyboard-aware floating island prompt bar with optional suggestions.
  */
 export function PromptInput({
   value,
@@ -51,6 +56,7 @@ export function PromptInput({
   canSubmit = false,
 }: PromptInputProps) {
   const { colors } = useTheme();
+  const [scrolled, setScrolled] = React.useState(false);
 
   const active = canSubmit && !disabled;
 
@@ -59,41 +65,74 @@ export function PromptInput({
   };
 
   return (
-    <KeyboardStickyView offset={{ closed: 0, opened: 0 }} style={styles.sticky}>
-      <View style={styles.wrapper}>
+    <KeyboardStickyView offset={{ closed: 0, opened: spacing.xxs }} style={styles.sticky}>
+      {/* Floating island card — inset from both edges, elevated above the content */}
+      <View
+        style={[
+          styles.island,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          },
+        ]}
+      >
         {suggestions && suggestions.length > 0 ? (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.suggestions}
-            keyboardShouldPersistTaps="handled"
-          >
-            {suggestions.map((suggestion) => (
-              <Pressable
-                key={suggestion}
-                onPress={() => onChangeText(suggestion)}
-                style={({ pressed }) => [
-                  styles.chip,
-                  { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
-                  { opacity: pressed ? 0.7 : 1 },
-                ]}
-              >
-                <Text style={[styles.chipText, { color: colors.textSecondary }]} numberOfLines={1}>
-                  {suggestion}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
+          <View style={styles.suggestionsWrapper}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.suggestions}
+              keyboardShouldPersistTaps="handled"
+              onScroll={(e) => setScrolled(e.nativeEvent.contentOffset.x > 0)}
+              scrollEventThrottle={16}
+            >
+              {suggestions.map((suggestion) => (
+                <Pressable
+                  key={suggestion}
+                  onPress={() => onChangeText(suggestion)}
+                  style={({ pressed }) => [
+                    styles.chip,
+                    { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+                    { opacity: pressed ? 0.7 : 1 },
+                  ]}
+                >
+                  <Text
+                    style={[styles.chipText, { color: colors.textSecondary }]}
+                    numberOfLines={1}
+                  >
+                    {suggestion}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+            {/* Leading fade — only visible once the user has scrolled right */}
+            {scrolled ? (
+              <LinearGradient
+                colors={[colors.surface, `${colors.surface}00`]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.fadeLeft}
+                pointerEvents="none"
+              />
+            ) : null}
+            {/* Trailing fade — transparent → surface */}
+            <LinearGradient
+              colors={[`${colors.surface}00`, colors.surface]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.fadeRight}
+              pointerEvents="none"
+            />
+          </View>
         ) : null}
 
-        <View style={[styles.bar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={styles.row}>
           <TextInput
             style={[styles.input, { color: colors.text }]}
             value={value}
             onChangeText={onChangeText}
             placeholder={placeholder}
             placeholderTextColor={colors.textMuted}
-            editable={!disabled}
             multiline
             onSubmitEditing={submit}
             returnKeyType="send"
@@ -122,24 +161,48 @@ export function PromptInput({
 const styles = StyleSheet.create({
   sticky: {
     width: '100%',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.xs,
+    paddingBottom: spacing.xs,
   },
-  wrapper: {
-    gap: spacing.sm,
-  },
-  bar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: radius.lg,
+  island: {
+    borderRadius: radius.xl,
     borderWidth,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    gap: spacing.sm,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 3,
+  },
+  suggestionsWrapper: {
+    position: 'relative',
+  },
+  suggestions: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xs,
+  },
+  fadeLeft: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    width: 48,
+  },
+  fadeRight: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    width: 48,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   input: {
     flex: 1,
@@ -147,6 +210,7 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     height: 88,
     paddingVertical: spacing.xs + 2,
+    textAlignVertical: 'top',
   },
   button: {
     width: 38,
@@ -154,10 +218,6 @@ const styles = StyleSheet.create({
     borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  suggestions: {
-    gap: spacing.sm,
-    paddingHorizontal: spacing.xs,
   },
   chip: {
     width: 160,

@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
 const SUGGESTIONS = [
   'A serene mountain lake at sunrise, hyperrealistic, 8k',
   'A cozy library with warm candlelight, digital painting',
-  'A futuristic city skyline at night, neon, cinematic',
   'A golden retriever puppy in a field of flowers, studio photo',
 ];
 
