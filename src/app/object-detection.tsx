@@ -5,6 +5,7 @@ import { DetectionOverlay } from '@/components/DetectionOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function ObjectDetectionTask() {
   const [busy, setBusy] = useState(false);
@@ -42,6 +43,9 @@ function ObjectDetectionTask() {
       busy={busy}
       onRun={run}
       runLabel="Detect Objects"
+      onDeleteModel={async () => {
+        await deleteCachedFiles(detector.resource);
+      }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >
       <PhotoPicker

@@ -5,6 +5,7 @@ import { KeypointOverlay } from '@/components/KeypointOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function KeypointDetectionTask() {
   const [busy, setBusy] = useState(false);
@@ -42,6 +43,9 @@ function KeypointDetectionTask() {
       busy={busy}
       onRun={run}
       runLabel="Estimate Pose"
+      onDeleteModel={async () => {
+        await deleteCachedFiles(detector.resource);
+      }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >
       <PhotoPicker

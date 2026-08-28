@@ -5,6 +5,7 @@ import { OcrOverlay } from '@/components/OcrOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function OcrTask() {
   const [busy, setBusy] = useState(false);
@@ -42,6 +43,9 @@ function OcrTask() {
       busy={busy}
       onRun={run}
       runLabel="Recognize Text"
+      onDeleteModel={async () => {
+        await deleteCachedFiles(ocr.resource);
+      }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >
       <PhotoPicker

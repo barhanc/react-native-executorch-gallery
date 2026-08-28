@@ -4,6 +4,7 @@ import { models, useSemanticSegmenter } from 'react-native-executorch';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 import { bufferToSkImage } from '@/lib/image';
 import { useDisposableImage } from '@/lib/useDisposableImage';
 
@@ -45,6 +46,9 @@ function SemanticSegmentationTask() {
       busy={busy}
       onRun={run}
       runLabel="Segment Image"
+      onDeleteModel={async () => {
+        await deleteCachedFiles(segmenter.resource);
+      }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >
       <PhotoPicker

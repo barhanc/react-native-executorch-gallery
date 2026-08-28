@@ -5,6 +5,7 @@ import { ClassificationOverlay } from '@/components/ClassificationOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function ImageClassificationTask() {
   const [busy, setBusy] = useState(false);
@@ -42,6 +43,9 @@ function ImageClassificationTask() {
       busy={busy}
       onRun={run}
       runLabel="Classify Image"
+      onDeleteModel={async () => {
+        await deleteCachedFiles(classifier.resource);
+      }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >
       <PhotoPicker
