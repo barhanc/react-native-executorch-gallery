@@ -193,7 +193,7 @@ export default function Home() {
       {/* Header Block */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
-          <Logo size={32} />
+          <Logo size={40} />
           <View style={styles.brandText}>
             <Text style={[styles.title, { color: colors.text }]}>React Native ExecuTorch</Text>
             <View style={styles.galleryBadgeRow}>
@@ -313,10 +313,10 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   title: {
-    fontSize: 21,
-    fontWeight: '800',
-    letterSpacing: -0.4,
-    lineHeight: 25,
+    fontSize: 24,
+    fontWeight: '500',
+    letterSpacing: -0.2,
+    lineHeight: 29,
   },
   galleryBadgeRow: {
     flexDirection: 'row',
@@ -324,9 +324,9 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   galleryWord: {
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 2,
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: 4,
   },
   subtitle: {
     fontSize: 13,
