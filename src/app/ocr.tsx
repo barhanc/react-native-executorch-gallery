@@ -8,13 +8,16 @@ import { TaskScreen } from '@/components/TaskScreen';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function OcrTask() {
-  const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
   const [results, setResults] = useState<OcrDetection[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const ocr = useOpticalCharacterRecognizer(models.ocr.PADDLE.PPOCRV6_SMALL.DEFAULT);
+  const ocr = useOpticalCharacterRecognizer(models.ocr.PADDLE.PPOCRV6_SMALL.DEFAULT, {
+    preventLoad: !loaded,
+  });
 
   const run = async () => {
     if (!image || !ocr.recognizeCharacters) return;
@@ -39,12 +42,14 @@ function OcrTask() {
       title="OCR Text Recognition"
       subtitle="PaddleOCR PP-OCRv6"
       status={{ ...ocr, error: error || ocr.error }}
+      onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       canRun={!!image && ocr.isReady}
       busy={busy}
       onRun={run}
       runLabel="Recognize Text"
       onDeleteModel={async () => {
         await deleteCachedFiles(ocr.resource);
+        setLoaded(false);
       }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >

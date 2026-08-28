@@ -8,13 +8,16 @@ import { TaskScreen } from '@/components/TaskScreen';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function ObjectDetectionTask() {
-  const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
   const [results, setResults] = useState<ObjectDetection<'xyxy', string>[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const detector = useObjectDetector(models.objectDetection.SSDLITE320_MOBILENET_V3_LARGE.DEFAULT);
+  const detector = useObjectDetector(models.objectDetection.SSDLITE320_MOBILENET_V3_LARGE.DEFAULT, {
+    preventLoad: !loaded,
+  });
 
   const run = async () => {
     if (!image || !detector.detectObjects) return;
@@ -39,12 +42,14 @@ function ObjectDetectionTask() {
       title="Object Detection"
       subtitle="SSDLite MobileNetV3"
       status={{ ...detector, error: error || detector.error }}
+      onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       canRun={!!image && detector.isReady}
       busy={busy}
       onRun={run}
       runLabel="Detect Objects"
       onDeleteModel={async () => {
         await deleteCachedFiles(detector.resource);
+        setLoaded(false);
       }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >

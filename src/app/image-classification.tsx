@@ -8,13 +8,16 @@ import { TaskScreen } from '@/components/TaskScreen';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function ImageClassificationTask() {
-  const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
   const [results, setResults] = useState<{ label: string; confidence: number }[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const classifier = useClassifier(models.classification.EFFICIENTNET_V2_S.DEFAULT);
+  const classifier = useClassifier(models.classification.EFFICIENTNET_V2_S.DEFAULT, {
+    preventLoad: !loaded,
+  });
 
   const run = async () => {
     if (!image || !classifier.classify) return;
@@ -39,12 +42,14 @@ function ImageClassificationTask() {
       title="Image Classification"
       subtitle="EfficientNetV2-S"
       status={{ ...classifier, error: error || classifier.error }}
+      onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       canRun={!!image && classifier.isReady}
       busy={busy}
       onRun={run}
       runLabel="Classify Image"
       onDeleteModel={async () => {
         await deleteCachedFiles(classifier.resource);
+        setLoaded(false);
       }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >

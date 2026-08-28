@@ -10,14 +10,17 @@ import { useDisposableImage } from '@/hooks/useDisposableImage';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function StyleTransferTask() {
-  const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
   const [styledImage, setStyledImage] = useDisposableImage();
   const [showOriginal, setShowOriginal] = useState(false);
   const [latency, setLatency] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const styleTransfer = useStyleTransfer(models.styleTransfer.CANDY.DEFAULT);
+  const styleTransfer = useStyleTransfer(models.styleTransfer.CANDY.DEFAULT, {
+    preventLoad: !loaded,
+  });
 
   const run = async () => {
     if (busy || !image || !styleTransfer.transferStyle) return;
@@ -46,6 +49,7 @@ function StyleTransferTask() {
       title="Style Transfer"
       subtitle="Candy Style"
       status={{ ...styleTransfer, error: error || styleTransfer.error }}
+      onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       canRun={!!image && styleTransfer.isReady && !busy}
       busy={busy}
       onRun={run}
@@ -53,6 +57,7 @@ function StyleTransferTask() {
       meta={latency != null ? `Inference ${latency} ms` : undefined}
       onDeleteModel={async () => {
         await deleteCachedFiles(styleTransfer.resource);
+        setLoaded(false);
       }}
     >
       <PhotoPicker

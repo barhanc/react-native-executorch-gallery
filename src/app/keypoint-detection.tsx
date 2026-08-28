@@ -8,13 +8,16 @@ import { TaskScreen } from '@/components/TaskScreen';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function KeypointDetectionTask() {
-  const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
   const [results, setResults] = useState<KeypointDetection<'xyxy', string>[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const detector = useKeypointDetector(models.keypointDetection.YOLO26_POSE.DEFAULT);
+  const detector = useKeypointDetector(models.keypointDetection.YOLO26_POSE.DEFAULT, {
+    preventLoad: !loaded,
+  });
 
   const run = async () => {
     if (!image || !detector.detectKeypoints) return;
@@ -39,12 +42,14 @@ function KeypointDetectionTask() {
       title="Pose Estimation"
       subtitle="YOLO26 Pose"
       status={{ ...detector, error: error || detector.error }}
+      onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       canRun={!!image && detector.isReady}
       busy={busy}
       onRun={run}
       runLabel="Estimate Pose"
       onDeleteModel={async () => {
         await deleteCachedFiles(detector.resource);
+        setLoaded(false);
       }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >

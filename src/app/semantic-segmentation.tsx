@@ -9,13 +9,16 @@ import { bufferToSkImage } from '@/lib/image';
 import { useDisposableImage } from '@/hooks/useDisposableImage';
 
 function SemanticSegmentationTask() {
-  const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
   const [segmentationImage, setSegmentationImage] = useDisposableImage();
   const [latency, setLatency] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const segmenter = useSemanticSegmenter(models.semanticSegmentation.DEEPLAB_V3_RESNET50.DEFAULT);
+  const segmenter = useSemanticSegmenter(models.semanticSegmentation.DEEPLAB_V3_RESNET50.DEFAULT, {
+    preventLoad: !loaded,
+  });
 
   const run = async () => {
     if (busy || !image || !segmenter.segment) return;
@@ -42,12 +45,14 @@ function SemanticSegmentationTask() {
       title="Semantic Segmentation"
       subtitle="DeepLabV3 ResNet50"
       status={{ ...segmenter, error: error || segmenter.error }}
+      onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       canRun={!!image && segmenter.isReady && !busy}
       busy={busy}
       onRun={run}
       runLabel="Segment Image"
       onDeleteModel={async () => {
         await deleteCachedFiles(segmenter.resource);
+        setLoaded(false);
       }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >

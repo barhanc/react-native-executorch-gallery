@@ -16,13 +16,16 @@ const SUGGESTIONS = [
 ];
 
 function TextToImageTask() {
+  const [loaded, setLoaded] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [image, setImage] = useDisposableImage();
   const [latency, setLatency] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const textToImage = useTextToImage(models.textToImage.SDXS_512_DREAMSHAPER.DEFAULT);
+  const textToImage = useTextToImage(models.textToImage.SDXS_512_DREAMSHAPER.DEFAULT, {
+    preventLoad: !loaded,
+  });
 
   const run = async () => {
     if (busy || !prompt.trim() || !textToImage.generate) return;
@@ -49,11 +52,13 @@ function TextToImageTask() {
       title="Text to Image"
       subtitle="SDXS 512 DreamShaper"
       status={{ ...textToImage, error: error || textToImage.error }}
+      onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       busy={busy}
       onRun={() => undefined}
       canRun={false}
       onDeleteModel={async () => {
         await deleteCachedFiles(textToImage.resource);
+        setLoaded(false);
       }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
       footer={

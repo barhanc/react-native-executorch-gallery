@@ -12,13 +12,16 @@ import { TaskScreen } from '@/components/TaskScreen';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function InstanceSegmentationTask() {
-  const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
   const [results, setResults] = useState<InstanceSegmentationResult<'xyxy', string>[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const segmenter = useInstanceSegmenter(models.instanceSegmentation.YOLO26.NANO.DEFAULT);
+  const segmenter = useInstanceSegmenter(models.instanceSegmentation.YOLO26.NANO.DEFAULT, {
+    preventLoad: !loaded,
+  });
 
   const run = async () => {
     if (!image || !segmenter.segmentInstances) return;
@@ -43,12 +46,14 @@ function InstanceSegmentationTask() {
       title="Instance Segmentation"
       subtitle="YOLO26 Nano"
       status={{ ...segmenter, error: error || segmenter.error }}
+      onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       canRun={!!image && segmenter.isReady}
       busy={busy}
       onRun={run}
       runLabel="Segment Instances"
       onDeleteModel={async () => {
         await deleteCachedFiles(segmenter.resource);
+        setLoaded(false);
       }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >

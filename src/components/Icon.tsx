@@ -23,6 +23,9 @@ export type IconName =
   | 'splitMask'
   | 'overlappingCircles'
   | 'arrowUp'
+  | 'arrowDown'
+  | 'download'
+  | 'cloudDownload'
   | 'send'
   | 'close'
   | 'trash'
@@ -51,6 +54,9 @@ const ICON_MAP: Record<IconName, keyof typeof Ionicons.glyphMap> = {
   splitMask: 'color-filter-outline',
   overlappingCircles: 'copy-outline',
   arrowUp: 'arrow-up',
+  arrowDown: 'arrow-down',
+  download: 'download-outline',
+  cloudDownload: 'cloud-download-outline',
   send: 'send-outline',
   close: 'close',
   trash: 'trash-outline',

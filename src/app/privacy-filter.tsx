@@ -11,6 +11,7 @@ import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 import { spacing } from '@/theme';
 
 function PrivacyFilterTask() {
+  const [loaded, setLoaded] = useState(false);
   const [input, setInput] = useState('');
   const [submitted, setSubmitted] = useState('');
   const [entities, setEntities] = useState<nlp.PiiEntity[]>([]);
@@ -18,7 +19,9 @@ function PrivacyFilterTask() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const privacyFilter = usePrivacyFilter(models.privacyFilter.OPENAI.DEFAULT);
+  const privacyFilter = usePrivacyFilter(models.privacyFilter.OPENAI.DEFAULT, {
+    preventLoad: !loaded,
+  });
 
   const run = async () => {
     if (busy || !input.trim() || !privacyFilter.detectPii) return;
@@ -44,11 +47,13 @@ function PrivacyFilterTask() {
       title="Privacy Filter"
       subtitle="OpenAI PII Detector"
       status={{ ...privacyFilter, error: error || privacyFilter.error }}
+      onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       busy={busy}
       onRun={() => undefined}
       canRun={false}
       onDeleteModel={async () => {
         await deleteCachedFiles(privacyFilter.resource);
+        setLoaded(false);
       }}
       meta={latency != null ? `Inference ${latency} ms` : undefined}
       footer={
