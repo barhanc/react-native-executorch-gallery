@@ -146,7 +146,7 @@ const SECTIONS: Section[] = [
         model: 'Kokoro 82M',
         iconName: 'audio',
         tint: 'red',
-        ready: false,
+        ready: true,
       },
       {
         href: '/voice-activity-detection',
