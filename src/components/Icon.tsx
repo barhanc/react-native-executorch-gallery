@@ -28,6 +28,7 @@ export type IconName =
   | 'cloudDownload'
   | 'send'
   | 'close'
+  | 'stop'
   | 'trash'
   | 'eye'
   | 'pulse'
@@ -59,6 +60,7 @@ const ICON_MAP: Record<IconName, keyof typeof Ionicons.glyphMap> = {
   cloudDownload: 'cloud-download-outline',
   send: 'send-outline',
   close: 'close',
+  stop: 'stop',
   trash: 'trash-outline',
   eye: 'eye-outline',
   pulse: 'pulse-outline',

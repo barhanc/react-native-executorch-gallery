@@ -29,6 +29,10 @@ export interface PromptInputProps {
   disabled?: boolean;
   /** Whether submitting is currently valid (e.g. not busy, input non-empty). */
   canSubmit?: boolean;
+  /** Whether an active task is running/playing that can be stopped. */
+  isPlaying?: boolean;
+  /** Callback fired when the user taps stop during active playback. */
+  onStop?: () => void;
 }
 
 /**
@@ -40,8 +44,8 @@ export interface PromptInputProps {
  * the full screen width. Pinned above the keyboard via a transparent sticky
  * view so it stays reachable while typing. Suggestion chips fade out
  * gracefully at the trailing edge via a LinearGradient overlay. Meant to be
- * shared across prompt-driven screens (LLM chat, text-to-image, privacy
- * filter, and so on).
+ * shared across prompt-driven screens (LLM chat, text-to-image, text-to-speech,
+ * privacy filter, and so on).
  *
  * @param props Controlled value, edit/submit callbacks, suggestions, and state flags.
  * @returns A keyboard-aware floating island prompt bar with optional suggestions.
@@ -54,14 +58,22 @@ export function PromptInput({
   placeholder = 'Type a message…',
   disabled = false,
   canSubmit = false,
+  isPlaying = false,
+  onStop,
 }: PromptInputProps) {
   const { colors } = useTheme();
   const [scrolled, setScrolled] = React.useState(false);
 
-  const active = canSubmit && !disabled;
+  const active = (canSubmit && !disabled) || (isPlaying && !!onStop);
 
-  const submit = () => {
-    if (active && onSubmit) onSubmit();
+  const handlePress = () => {
+    if (isPlaying && onStop) {
+      onStop();
+      return;
+    }
+    if (canSubmit && !disabled && onSubmit) {
+      onSubmit();
+    }
   };
 
   return (
@@ -89,11 +101,12 @@ export function PromptInput({
               {suggestions.map((suggestion) => (
                 <Pressable
                   key={suggestion}
+                  disabled={isPlaying || disabled}
                   onPress={() => onChangeText(suggestion)}
                   style={({ pressed }) => [
                     styles.chip,
                     { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
-                    { opacity: pressed ? 0.7 : 1 },
+                    { opacity: pressed ? 0.7 : isPlaying || disabled ? 0.5 : 1 },
                   ]}
                 >
                   <Text
@@ -134,20 +147,29 @@ export function PromptInput({
             placeholder={placeholder}
             placeholderTextColor={colors.textMuted}
             multiline
-            onSubmitEditing={submit}
+            editable={!isPlaying && !disabled}
+            onSubmitEditing={handlePress}
             returnKeyType="send"
           />
           <Pressable
-            onPress={submit}
+            onPress={handlePress}
             disabled={!active}
             style={({ pressed }) => [
               styles.button,
-              { backgroundColor: active ? colors.accent : colors.surfaceSubtle },
+              {
+                backgroundColor: isPlaying
+                  ? colors.danger
+                  : active
+                    ? colors.accent
+                    : colors.surfaceSubtle,
+              },
               { opacity: pressed ? 0.85 : 1 },
             ]}
           >
-            {disabled ? (
+            {disabled && !isPlaying ? (
               <ActivityIndicator size="small" color={colors.accent} />
+            ) : isPlaying ? (
+              <Icon name="stop" size={18} color={colors.onAccent} />
             ) : (
               <Icon name="arrowUp" size={20} color={active ? colors.onAccent : colors.textMuted} />
             )}

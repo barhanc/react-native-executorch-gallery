@@ -27,6 +27,12 @@ function TextToSpeechTask() {
   });
   const player = useAudioPlayer();
 
+  const handleStop = () => {
+    tts.synthesizeStop?.();
+    player.stop();
+    setBusy(false);
+  };
+
   const run = async () => {
     if (busy || player.isPlaying || !prompt.trim() || !tts.synthesize) return;
     Keyboard.dismiss();
@@ -58,8 +64,7 @@ function TextToSpeechTask() {
       onRun={() => undefined}
       canRun={false}
       onDeleteModel={async () => {
-        tts.synthesizeStop?.();
-        player.stop();
+        handleStop();
         await deleteCachedFiles(tts.resource);
         setLoaded(false);
       }}
@@ -69,7 +74,9 @@ function TextToSpeechTask() {
           value={prompt}
           onChangeText={setPrompt}
           onSubmit={run}
-          disabled={isExecuting}
+          disabled={busy && !player.isPlaying}
+          isPlaying={player.isPlaying}
+          onStop={handleStop}
           canSubmit={!!prompt.trim() && tts.isReady && !isExecuting}
           suggestions={SUGGESTIONS}
           placeholder="Enter text to synthesize into speech…"
