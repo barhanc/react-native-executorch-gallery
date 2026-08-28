@@ -18,40 +18,20 @@ type Task = {
 
 type Section = {
   title: string;
-  description: string;
   tasks: Task[];
 };
 
 const SECTIONS: Section[] = [
   {
     title: 'Computer Vision',
-    description: 'High-speed bounding boxes, spatial models & camera processing',
     tasks: [
       {
-        href: '/object-detection',
-        title: 'Object Detection',
-        subtitle: 'Locate and classify multiple objects in photos',
-        model: 'SSDLite MobileNetV3',
-        iconName: 'scan',
-        tint: '#2A47FF',
-        ready: true,
-      },
-      {
-        href: '/image-classification',
-        title: 'Image Classification',
-        subtitle: 'Identify 1,000 object categories with confidence',
-        model: 'EfficientNetV2-S',
-        iconName: 'photo',
-        tint: '#0284C7',
-        ready: true,
-      },
-      {
-        href: '/style-transfer',
-        title: 'Style Transfer',
-        subtitle: 'Transform photos into artistic paintings',
-        model: 'Candy Style',
-        iconName: 'palette',
-        tint: '#D946EF',
+        href: '/instance-segmentation',
+        title: 'Instance Segmentation',
+        subtitle: 'Detect and mask individual object instances',
+        model: 'YOLO26 Nano',
+        iconName: 'overlappingCircles',
+        tint: '#8B5CF6',
         ready: true,
       },
       {
@@ -64,6 +44,33 @@ const SECTIONS: Section[] = [
         ready: true,
       },
       {
+        href: '/ocr',
+        title: 'OCR Text Recognition',
+        subtitle: 'Detect and read multilingual text in photos',
+        model: 'PaddleOCR PP-OCRv6',
+        iconName: 'textDoc',
+        tint: '#EA580C',
+        ready: true,
+      },
+      {
+        href: '/style-transfer',
+        title: 'Style Transfer',
+        subtitle: 'Transform photos into artistic paintings',
+        model: 'Candy Style',
+        iconName: 'palette',
+        tint: '#D946EF',
+        ready: true,
+      },
+      {
+        href: '/object-detection',
+        title: 'Object Detection',
+        subtitle: 'Locate and classify multiple objects in photos',
+        model: 'SSDLite MobileNetV3',
+        iconName: 'scan',
+        tint: '#2A47FF',
+        ready: true,
+      },
+      {
         href: '/semantic-segmentation',
         title: 'Semantic Segmentation',
         subtitle: 'Segment objects by class with pixel-level masks',
@@ -73,28 +80,18 @@ const SECTIONS: Section[] = [
         ready: true,
       },
       {
-        href: '/instance-segmentation',
-        title: 'Instance Segmentation',
-        subtitle: 'Detect and mask individual object instances',
-        model: 'YOLO26 Nano',
-        iconName: 'scissors',
-        tint: '#8B5CF6',
-        ready: true,
-      },
-      {
-        href: '/ocr',
-        title: 'OCR Text Recognition',
-        subtitle: 'Detect and read multilingual text in photos',
-        model: 'PaddleOCR PP-OCRv6',
-        iconName: 'textDoc',
-        tint: '#EA580C',
+        href: '/image-classification',
+        title: 'Image Classification',
+        subtitle: 'Identify 1,000 object categories with confidence',
+        model: 'EfficientNetV2-S',
+        iconName: 'eye',
+        tint: '#0284C7',
         ready: true,
       },
     ],
   },
   {
     title: 'Generative AI',
-    description: 'On-device generative image synthesis & conversational reasoning',
     tasks: [
       {
         href: '/text-to-image',
@@ -117,8 +114,7 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    title: 'Embeddings & Vectors',
-    description: 'Dense vector representations for semantic search and retrieval',
+    title: 'Embeddings & Search',
     tasks: [
       {
         href: '/image-embeddings',
@@ -133,7 +129,6 @@ const SECTIONS: Section[] = [
   },
   {
     title: 'Audio & Speech',
-    description: 'High-fidelity voice synthesis & real-time transcription',
     tasks: [
       {
         href: '/speech-to-text',
@@ -184,7 +179,9 @@ export default function Home() {
           </View>
         </View>
         <Text style={[styles.subtitle, { color: colors.textDim }]}>
-          On-device machine learning showcase and interactive task gallery
+          Explore on-device machine learning with React Native ExecuTorch. Every task runs entirely
+          on your phone — no network, full privacy. Try each model live and see how fast on-device
+          inference really is.
         </Text>
       </View>
 
@@ -193,9 +190,6 @@ export default function Home() {
         <View key={section.title} style={{ gap: spacing.sm + 2 }}>
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.title}</Text>
-            <Text style={[styles.sectionDesc, { color: colors.textMuted }]}>
-              {section.description}
-            </Text>
           </View>
 
           <View style={{ gap: spacing.sm }}>

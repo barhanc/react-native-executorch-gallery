@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~57.0.14",
+    "@expo/vector-icons": "^15.1.1",
     "@shopify/react-native-skia": "2.6.2",
     "expo": "~57.0.17",
     "expo-build-properties": "~57.0.15",

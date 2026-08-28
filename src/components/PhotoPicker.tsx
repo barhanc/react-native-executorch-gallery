@@ -151,12 +151,12 @@ export function PhotoPicker({
         <PickButton
           iconName="camera"
           label="Take Photo"
-          variant="primary"
+          variant="secondary"
           onPress={() => choose('camera')}
         />
         <PickButton
           iconName="photo"
-          label="Photo Library"
+          label="Photo Gallery"
           variant="secondary"
           onPress={() => choose('library')}
         />

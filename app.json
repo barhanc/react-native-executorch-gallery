@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "react-native-executorch-gallery",
+    "name": "ExecuTorch Gallery",
     "slug": "react-native-executorch-gallery",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -27,7 +27,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#0B0D12",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
