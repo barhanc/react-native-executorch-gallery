@@ -29,13 +29,8 @@ function StyleTransferTask() {
       const output = await styleTransfer.transferStyle(image.buffer);
       setLatency(Date.now() - t0);
 
-      // Decoded here, once, rather than in render: the styled frame is a
-      // full-resolution RGBA buffer and each decode charges its size against
-      // the JS heap.
       const skiaStyled = bufferToSkImage(output);
-      if (!skiaStyled) {
-        throw new Error('Failed to create styled image from output data');
-      }
+      if (!skiaStyled) throw new Error('Failed to create styled image from output data');
       setStyledImage(skiaStyled);
       setShowOriginal(false);
     } catch (err: any) {

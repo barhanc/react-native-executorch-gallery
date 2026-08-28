@@ -26,12 +26,8 @@ function SemanticSegmentationTask() {
       const { buffer: outBuffer } = await segmenter.segment(image.buffer);
       setLatency(Date.now() - t0);
 
-      // Decoded here, once, rather than in render: the mask is a full-resolution
-      // RGBA buffer and each decode charges its size against the JS heap.
       const nextImage = bufferToSkImage(outBuffer);
-      if (!nextImage) {
-        throw new Error('Failed to create overlay image from output data');
-      }
+      if (!nextImage) throw new Error('Failed to create overlay image from output data');
       setSegmentationImage(nextImage);
     } catch (err: any) {
       setError(err?.message ?? String(err));
