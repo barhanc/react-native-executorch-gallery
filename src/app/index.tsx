@@ -201,9 +201,6 @@ export default function Home() {
           style={styles.brandImage}
           contentFit="contain"
         />
-        <View style={styles.galleryBadgeRow}>
-          <Text style={[styles.galleryWord, { color: colors.accent }]}>GALLERY</Text>
-        </View>
         <Text style={[styles.subtitle, { color: colors.textDim }]}>
           Explore on-device machine learning with React Native ExecuTorch. Every task runs entirely
           on your phone — no data leaves the device. Models are downloaded on first use, then run
@@ -310,16 +307,6 @@ const styles = StyleSheet.create({
     width: '68%',
     aspectRatio: 1139.63 / 332,
     alignSelf: 'flex-start',
-  },
-  galleryBadgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 1,
-  },
-  galleryWord: {
-    fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 4,
   },
   subtitle: {
     fontSize: 13,

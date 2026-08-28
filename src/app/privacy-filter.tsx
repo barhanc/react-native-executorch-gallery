@@ -67,6 +67,7 @@ function PrivacyFilterTask() {
         style={styles.scroll}
         contentContainerStyle={styles.body}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
       >
         {entities.length === 0 ? (
           <EmptyState

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Keyboard, Pressable, StyleSheet } from 'react-native';
 import { models, useTextToImage } from 'react-native-executorch';
 
 import { GeneratedImage } from '@/components/GeneratedImage';
@@ -64,17 +65,25 @@ function TextToImageTask() {
         />
       }
     >
-      {image ? (
-        <GeneratedImage image={image} />
-      ) : (
-        <EmptyState
-          title="Nothing generated yet"
-          message="Type a prompt and press send to synthesize an image on-device."
-        />
-      )}
+      <Pressable style={styles.content} onPress={Keyboard.dismiss} accessible={false}>
+        {image ? (
+          <GeneratedImage image={image} />
+        ) : (
+          <EmptyState
+            title="Nothing generated yet"
+            message="Type a prompt and press send to synthesize an image on-device."
+          />
+        )}
+      </Pressable>
     </TaskScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+  },
+});
 
 const SUGGESTIONS = [
   'A serene mountain lake at sunrise, hyperrealistic, 8k',

@@ -93,17 +93,17 @@ export const piiColors = [
   { bg: 'rgba(214, 64, 159, 0.16)', fg: '#D6409F' }, // pink
 ] as const;
 
-/** Accent color for model-name capsules that stand out from the blue theme. */
+/** Accent color for model-name capsules. */
 export const modelTag = {
   light: {
-    fg: '#782AEB',
-    bg: 'rgba(120, 42, 235, 0.10)',
-    border: 'rgba(120, 42, 235, 0.28)',
+    fg: '#4B6CF4',
+    bg: 'rgba(75, 108, 244, 0.10)',
+    border: 'rgba(75, 108, 244, 0.28)',
   },
   dark: {
-    fg: '#B07EFF',
-    bg: 'rgba(176, 126, 255, 0.12)',
-    border: 'rgba(176, 126, 255, 0.30)',
+    fg: '#7394FF',
+    bg: 'rgba(115, 148, 255, 0.12)',
+    border: 'rgba(115, 148, 255, 0.30)',
   },
 } as const;
 
