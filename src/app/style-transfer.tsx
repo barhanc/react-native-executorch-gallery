@@ -7,6 +7,7 @@ import { StyleTransferOverlay } from '@/components/StyleTransferOverlay';
 import { TaskScreen } from '@/components/TaskScreen';
 import { bufferToSkImage } from '@/lib/image';
 import { useDisposableImage } from '@/lib/useDisposableImage';
+import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 function StyleTransferTask() {
   const [busy, setBusy] = useState(false);
@@ -50,6 +51,9 @@ function StyleTransferTask() {
       onRun={run}
       runLabel="Transfer Style"
       meta={latency != null ? `Inference ${latency} ms` : undefined}
+      onDeleteModel={async () => {
+        await deleteCachedFiles(styleTransfer.resource);
+      }}
     >
       <PhotoPicker
         busy={busy}
