@@ -1,3 +1,4 @@
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { ObjectDetection } from 'react-native-executorch';
 
@@ -5,17 +6,23 @@ import type { ViewportTransform } from '@/components/PhotoPicker';
 import { domainColor } from '@/lib/labels';
 import { radius } from '@/theme';
 
-/**
- * Draws detection boxes over the canvas. Boxes are `xyxy` in source-image
- * pixels; the {@link ViewportTransform} maps them into displayed coordinates.
- */
-export function DetectionOverlay({
-  detections,
-  transform,
-}: {
+export interface DetectionOverlayProps {
+  /** Array of bounding box detections returned by the object detector. */
   detections: ObjectDetection<'xyxy', string>[];
+  /** Geometric viewport transformation mapping pixel coordinates to screen bounds. */
   transform: ViewportTransform;
-}) {
+}
+
+/**
+ * Draws spatial bounding boxes and class labels over the displayed photo.
+ *
+ * Mappable coordinates from source image pixel space (`xyxy`) to viewport
+ * coordinate space via {@link ViewportTransform}.
+ *
+ * @param props Detection boxes and active viewport coordinate transform.
+ * @returns Absolutely positioned bounding boxes and label badges.
+ */
+export function DetectionOverlay({ detections, transform }: DetectionOverlayProps) {
   const { scale, offsetX, offsetY } = transform;
 
   return (
@@ -83,8 +90,7 @@ const styles = StyleSheet.create({
   tagText: {
     color: '#FFFFFF',
     fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.2,
+    fontWeight: '500',
+    letterSpacing: 0.1,
   },
 });
-

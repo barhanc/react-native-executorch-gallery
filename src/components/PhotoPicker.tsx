@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Canvas, Image as SkiaImage, useImage } from '@shopify/react-native-skia';
 import type { ImageBuffer } from 'react-native-executorch/cv';
@@ -7,42 +7,60 @@ import { radius, spacing, useTheme } from '@/theme';
 import { pickImage, skImageToBuffer } from '@/lib/image';
 import { Icon, type IconName } from '@/components/Icon';
 
-export type PickedImage = {
+export interface PickedImage {
+  /** Local file URI of the captured or selected image. */
   uri: string;
+  /** ExecuTorch C++ compatible raw image buffer (RGB/RGBA planar/interleaved). */
   buffer: ImageBuffer;
+  /** Width of the photo in source pixels. */
   width: number;
+  /** Height of the photo in source pixels. */
   height: number;
-};
+}
 
-/**
- * Maps a bounding box in source-image pixels onto the displayed canvas.
- */
-export type ViewportTransform = {
+export interface ViewportTransform {
+  /** Scale factor mapping source-image pixels to displayed canvas pixels. */
   scale: number;
+  /** Horizontal letterboxing offset in points. */
   offsetX: number;
+  /** Vertical letterboxing offset in points. */
   offsetY: number;
-};
+}
+
+export interface PhotoPickerProps {
+  /** Callback triggered when a photo is selected, captured, or cleared. */
+  onPick: (image: PickedImage | null) => void;
+  /** Optional render function for task-specific overlays (boxes, masks, landmarks). */
+  renderOverlay?: (transform: ViewportTransform) => ReactNode;
+  /** Target width in pixels to downscale images (pass `null` to preserve full original resolution). */
+  targetWidth?: number | null;
+  /** Whether the model is currently processing inference over the photo. */
+  busy?: boolean;
+}
 
 /**
- * Camera image viewport with a fixed 3:4 vertical phone camera aspect ratio.
- * Features an authentic camera viewfinder HUD with corner reticles and precise
- * coordinate mapping for detection overlays.
+ * Responsive photo canvas and camera HUD supporting hardware-rendered image previews.
+ *
+ * Provides camera capture, gallery selection, aspect-fit letterbox computation,
+ * and automated coordinate transformation for task overlays.
+ *
+ * @param props Component properties including `onPick`, `renderOverlay`, and `busy`.
+ * @returns Responsive image viewport and selection action buttons.
  */
 export function PhotoPicker({
   onPick,
   renderOverlay,
-}: {
-  width?: number;
-  onPick: (image: PickedImage | null) => void;
-  renderOverlay?: (transform: ViewportTransform) => ReactNode;
-}) {
+  targetWidth = 800,
+  busy = false,
+}: PhotoPickerProps) {
   const { colors } = useTheme();
   const [uri, setUri] = useState<string | null>(null);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const image = useImage(uri, () => onPick(null));
 
   const choose = async (source: 'library' | 'camera') => {
-    const picked = await pickImage(source);
+    const widthToUse = targetWidth === null ? undefined : targetWidth;
+    const picked = await pickImage(source, widthToUse);
     if (!picked) return;
     onPick(null);
     setUri(picked);
@@ -89,14 +107,7 @@ export function PhotoPicker({
         {image && viewW > 0 && viewH > 0 ? (
           <>
             <Canvas style={StyleSheet.absoluteFill}>
-              <SkiaImage
-                image={image}
-                fit="contain"
-                x={0}
-                y={0}
-                width={viewW}
-                height={viewH}
-              />
+              <SkiaImage image={image} fit="contain" x={0} y={0} width={viewW} height={viewH} />
             </Canvas>
             {renderOverlay?.(transform)}
           </>
@@ -110,9 +121,7 @@ export function PhotoPicker({
             >
               <Icon name="camera" size={28} color={colors.accent} strokeWidth={2} />
             </View>
-            <Text style={[styles.placeholderTitle, { color: colors.text }]}>
-              No Image Selected
-            </Text>
+            <Text style={[styles.placeholderTitle, { color: colors.text }]}>No Image Selected</Text>
             <Text style={[styles.placeholderSub, { color: colors.textDim }]}>
               Take a photo or choose an image from your library
             </Text>
@@ -184,12 +193,7 @@ function PickButton({
         color={isPrimary ? colors.accent : colors.textSecondary}
         strokeWidth={2.2}
       />
-      <Text
-        style={[
-          styles.pickLabel,
-          { color: isPrimary ? colors.accent : colors.text },
-        ]}
-      >
+      <Text style={[styles.pickLabel, { color: isPrimary ? colors.accent : colors.text }]}>
         {label}
       </Text>
     </Pressable>
@@ -221,26 +225,39 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    borderWidth: 1,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.xs,
   },
-  placeholderTitle: { fontSize: 16, fontWeight: '700', letterSpacing: -0.2 },
-  placeholderSub: { fontSize: 13, textAlign: 'center', maxWidth: 240, lineHeight: 18 },
-  buttons: { flexDirection: 'row', gap: spacing.sm },
-  pickButton: {
-    flex: 1,
-    height: 44,
+  placeholderTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: -0.2,
+  },
+  placeholderSub: {
+    fontSize: 12,
+    textAlign: 'center',
+    maxWidth: 240,
+    lineHeight: 16,
+  },
+  buttons: {
     flexDirection: 'row',
     gap: spacing.sm,
-    borderRadius: radius.md,
-    borderWidth: 1,
+  },
+  pickButton: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.xs + 2,
+    paddingVertical: spacing.sm + 1,
+    borderRadius: radius.md,
+    borderWidth: 1,
   },
-  pickLabel: { fontSize: 14, fontWeight: '700', letterSpacing: 0.1 },
+  pickLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.1,
+  },
 });
-
-
-

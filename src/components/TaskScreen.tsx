@@ -1,53 +1,84 @@
-import { ReactNode } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import React, { ReactNode } from 'react';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 
 import { radius, spacing, useTheme } from '@/theme';
 import { Icon } from '@/components/Icon';
 
-/** Loading/progress/error state shared by every task hook. */
-export type TaskStatus = {
+/** Loading, download progress, and error state contract shared by task hooks. */
+export interface TaskStatus {
+  /** Whether the neural model and its C++ runtime instance are initialized and ready. */
   isReady: boolean;
+  /** Download progress percentage from 0.0 to 1.0 when fetching remote weights. */
   downloadProgress?: number;
+  /** Resolved local resource paths returned by ExecuTorch task hooks. */
+  resource?: unknown;
+  /** Error instance or message if model loading or runtime compilation failed. */
   error?: unknown;
-};
+}
+
+export interface TaskScreenProps {
+  /** Screen and navigation header title. */
+  title: string;
+  /** Model architecture and dataset metadata subtitle (e.g. "SSDLite MobileNetV3 · COCO"). */
+  subtitle?: string;
+  /** Task hook status (isReady, downloadProgress, error). */
+  status: TaskStatus;
+  /** Whether the user can currently run the model task. */
+  canRun: boolean;
+  /** Whether the model is actively processing on-device inference. */
+  busy?: boolean;
+  /** Action handler invoked when the user taps the primary task button. */
+  onRun: () => void;
+  /** Label for the primary action button. */
+  runLabel?: string;
+  /** Optional metadata chip text (e.g. latency metric). */
+  meta?: string;
+  /** Optional handler to delete/clear downloaded model weights from storage. */
+  onDeleteModel?: () => Promise<void> | void;
+  /** Task UI viewport content. */
+  children: ReactNode;
+}
 
 /**
-  * Screen scaffold for a single ML task: navigation title, model status,
-  * scrollable body, and a sticky run button. Screens supply only the task
-  * content and the run handler — no layout of their own.
-  */
+ * Universal layout wrapper for on-device ExecuTorch ML tasks.
+ *
+ * Enforces unified typography, model ready indicators, download progress,
+ * and responsive action controls.
+ *
+ * @param props Task screen configuration and children viewports.
+ * @returns Fully styled task view with header and bottom action bar.
+ */
 export function TaskScreen({
   title,
   subtitle,
   status,
-  onRun,
-  runLabel = 'Run Inference',
   canRun,
-  busy,
+  busy = false,
+  onRun,
+  runLabel = 'Run task',
   meta,
+  onDeleteModel,
   children,
-}: {
-  title: string;
-  subtitle?: string;
-  status: TaskStatus;
-  onRun: () => void;
-  runLabel?: string;
-  canRun: boolean;
-  busy?: boolean;
-  meta?: string;
-  children: ReactNode;
-}) {
+}: TaskScreenProps) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+
+  const isExecutingRef = React.useRef(false);
+
+  const handleRunPress = () => {
+    if (!canRun || busy || isExecutingRef.current) return;
+    isExecutingRef.current = true;
+    try {
+      onRun();
+    } finally {
+      setTimeout(() => {
+        isExecutingRef.current = false;
+      }, 300);
+    }
+  };
+
   return (
     <View
       style={[
@@ -64,24 +95,56 @@ export function TaskScreen({
       <Stack.Screen
         options={{
           title,
-          headerBackTitle: 'Tasks',
-          headerTitleStyle: { fontWeight: '700', fontSize: 17 },
+          headerBackTitle: 'Gallery',
+          headerTintColor: colors.text,
+          headerStyle: { backgroundColor: colors.bg },
+          headerShadowVisible: false,
         }}
       />
 
       <View style={styles.headerBlock}>
-        {subtitle ? (
-          <View
-            style={[
-              styles.badge,
-              { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
-            ]}
-          >
-            <Text style={[styles.badgeText, { color: colors.textSecondary }]}>
-              {subtitle}
-            </Text>
-          </View>
-        ) : null}
+        <View style={styles.headerRow}>
+          {subtitle ? (
+            <View
+              style={[
+                styles.badge,
+                { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
+              ]}
+            >
+              <Text style={[styles.badgeText, { color: colors.textSecondary }]}>{subtitle}</Text>
+            </View>
+          ) : null}
+
+          {onDeleteModel && status.isReady ? (
+            <Pressable
+              onPress={() => {
+                Alert.alert(
+                  'Delete Model Weights',
+                  'Delete downloaded model weights from device storage to free up disk space?',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Delete',
+                      style: 'destructive',
+                      onPress: onDeleteModel,
+                    },
+                  ]
+                );
+              }}
+              style={({ pressed }) => [
+                styles.deleteBadge,
+                {
+                  backgroundColor: colors.surfaceSubtle,
+                  borderColor: colors.border,
+                  opacity: pressed ? 0.6 : 1,
+                },
+              ]}
+            >
+              <Icon name="trash" size={12} color={colors.danger} strokeWidth={2} />
+              <Text style={[styles.deleteText, { color: colors.danger }]}>Delete model</Text>
+            </Pressable>
+          ) : null}
+        </View>
 
         <StatusBanner status={status} meta={meta} />
       </View>
@@ -90,44 +153,41 @@ export function TaskScreen({
 
       <View style={styles.footer}>
         <Pressable
-          onPress={onRun}
+          onPress={handleRunPress}
           disabled={!canRun || busy}
           style={({ pressed }) => [
             styles.runButton,
-            canRun && !busy
+            canRun || busy
               ? {
                   backgroundColor: colors.accent,
                   borderColor: colors.accentBorder,
-                  borderWidth: 1,
                   shadowColor: colors.accent,
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 10,
-                  elevation: 6,
+                  shadowOffset: { width: 0, height: 3 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 8,
+                  elevation: 4,
+                  opacity: busy ? 0.95 : pressed ? 0.85 : 1,
                 }
               : {
                   backgroundColor: colors.surfaceSubtle,
                   borderColor: colors.border,
-                  borderWidth: StyleSheet.hairlineWidth,
+                  opacity: 1,
                 },
             {
-              opacity: pressed ? 0.85 : 1,
-              transform: [{ scale: pressed && canRun && !busy ? 0.975 : 1 }],
+              transform: [{ scale: pressed && canRun && !busy ? 0.98 : 1 }],
             },
           ]}
         >
           {busy ? (
-            <View style={styles.loadingRow}>
-              <ActivityIndicator color="#FFFFFF" size="small" />
-              <Text style={[styles.runLabel, { color: '#FFFFFF' }]}>
-                RUNNING ON EXECUTORCH…
-              </Text>
+            <View style={styles.buttonInner}>
+              <ActivityIndicator color="#FFFFFF" size="small" style={styles.spinner} />
+              <Text style={[styles.runLabel, { color: '#FFFFFF' }]}>Executing on-device…</Text>
             </View>
           ) : (
-            <View style={styles.buttonContent}>
+            <View style={styles.buttonInner}>
               {canRun ? (
                 <View style={styles.buttonIconBadge}>
-                  <Icon name="scan" size={20} color="#FFFFFF" strokeWidth={2.4} />
+                  <Icon name="scan" size={16} color="#FFFFFF" strokeWidth={2} />
                 </View>
               ) : null}
               <Text
@@ -135,8 +195,6 @@ export function TaskScreen({
                   styles.runLabel,
                   {
                     color: canRun ? '#FFFFFF' : colors.textMuted,
-                    fontWeight: '800',
-                    letterSpacing: 0.8,
                   },
                 ]}
               >
@@ -150,30 +208,32 @@ export function TaskScreen({
   );
 }
 
-function StatusBanner({
-  status,
-  meta,
-}: {
-  status: TaskStatus;
-  meta?: string;
-}) {
+function StatusBanner({ status, meta }: { status: TaskStatus; meta?: string }) {
   const { colors } = useTheme();
   const err = status.error ? String((status.error as Error)?.message ?? status.error) : null;
-  const progress = status.downloadProgress ?? 0;
-  const downloading = !status.isReady && status.downloadProgress != null && progress < 1;
+  const rawProgress = status.downloadProgress;
+  const pct =
+    rawProgress == null
+      ? null
+      : rawProgress <= 1 && rawProgress > 0
+        ? Math.round(rawProgress * 100)
+        : Math.round(rawProgress);
+
+  const isDownloading = !status.isReady && pct != null && pct < 100;
 
   if (err) {
     return (
       <View
         style={[
-          styles.statusCard,
+          styles.errorCard,
           { backgroundColor: colors.dangerSoft, borderColor: colors.danger },
         ]}
       >
-        <View style={[styles.dot, { backgroundColor: colors.danger }]} />
-        <Text numberOfLines={2} style={[styles.statusText, { color: colors.danger }]}>
-          {err}
-        </Text>
+        <View style={styles.errorHeader}>
+          <View style={[styles.dot, { backgroundColor: colors.danger }]} />
+          <Text style={[styles.errorTitle, { color: colors.danger }]}>Error</Text>
+        </View>
+        <Text style={[styles.errorText, { color: colors.danger }]}>{err}</Text>
       </View>
     );
   }
@@ -181,16 +241,11 @@ function StatusBanner({
   if (status.isReady) {
     return (
       <View
-        style={[
-          styles.statusCard,
-          { backgroundColor: colors.surface, borderColor: colors.border },
-        ]}
+        style={[styles.statusCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
       >
         <View style={styles.statusLeft}>
           <View style={[styles.dot, { backgroundColor: '#10B981' }]} />
-          <Text style={[styles.statusText, { color: colors.textSecondary }]}>
-            Ready
-          </Text>
+          <Text style={[styles.statusText, { color: colors.textSecondary }]}>Ready</Text>
         </View>
 
         {meta ? (
@@ -203,19 +258,48 @@ function StatusBanner({
     );
   }
 
+  if (isDownloading && pct != null) {
+    return (
+      <View
+        style={[
+          styles.downloadCard,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+        ]}
+      >
+        <View style={styles.downloadHeader}>
+          <View style={styles.statusLeft}>
+            <ActivityIndicator size="small" color={colors.accent} />
+            <Text style={[styles.statusText, { color: colors.text }]}>
+              Downloading model assets…
+            </Text>
+          </View>
+          <Text style={[styles.progressPct, { color: colors.accent }]}>{pct}%</Text>
+        </View>
+        <View style={[styles.progressBarTrack, { backgroundColor: colors.surfaceSubtle }]}>
+          <View
+            style={[
+              styles.progressBarFill,
+              {
+                width: `${Math.max(4, Math.min(100, pct))}%`,
+                backgroundColor: colors.accent,
+              },
+            ]}
+          />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View
-      style={[
-        styles.statusCard,
-        { backgroundColor: colors.surface, borderColor: colors.border },
-      ]}
+      style={[styles.statusCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
     >
-      <ActivityIndicator size="small" color={colors.accent} />
-      <Text numberOfLines={1} style={[styles.statusText, { color: colors.textSecondary }]}>
-        {downloading
-          ? `Downloading model assets (${Math.round(progress * 100)}%)…`
-          : 'Initializing ExecuTorch runtime…'}
-      </Text>
+      <View style={styles.statusLeft}>
+        <ActivityIndicator size="small" color={colors.accent} />
+        <Text numberOfLines={1} style={[styles.statusText, { color: colors.textSecondary }]}>
+          Initializing ExecuTorch runtime…
+        </Text>
+      </View>
     </View>
   );
 }
@@ -223,6 +307,11 @@ function StatusBanner({
 const styles = StyleSheet.create({
   root: { flex: 1 },
   headerBlock: { gap: spacing.xs + 2 },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   badge: {
     alignSelf: 'flex-start',
     paddingHorizontal: spacing.sm + 2,
@@ -230,7 +319,42 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: StyleSheet.hairlineWidth,
   },
-  badgeText: { fontSize: 12, fontWeight: '600', letterSpacing: 0.2 },
+  badgeText: { fontSize: 12, fontWeight: '500', letterSpacing: 0.1 },
+  deleteBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm + 2,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: 4,
+  },
+  deleteText: {
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  errorCard: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: spacing.xs,
+  },
+  errorHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs + 2,
+  },
+  errorTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.2,
+  },
+  errorText: {
+    fontSize: 12,
+    fontWeight: '400',
+    lineHeight: 16,
+  },
   statusCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -242,50 +366,83 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     minHeight: 38,
   },
+  downloadCard: {
+    gap: spacing.xs + 2,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs + 4,
+    borderRadius: radius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  downloadHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  progressPct: {
+    fontSize: 12,
+    fontWeight: '600',
+    fontVariant: ['tabular-nums'],
+  },
+  progressBarTrack: {
+    height: 4,
+    borderRadius: 2,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 2,
+  },
   statusLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs + 2,
   },
   dot: { width: 6, height: 6, borderRadius: 3 },
-  statusText: { fontSize: 12, fontWeight: '600' },
+  statusText: { fontSize: 13, fontWeight: '500' },
   latencyRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
   },
-  latencyText: { fontSize: 12, fontWeight: '700', letterSpacing: 0.1 },
+  latencyText: {
+    fontSize: 12,
+    fontWeight: '700',
+    fontVariant: ['tabular-nums'],
+  },
   contentBody: {
     flex: 1,
     minHeight: 0,
   },
   footer: {
-    paddingTop: spacing.xs,
+    paddingTop: 2,
   },
   runButton: {
-    height: 52,
-    borderRadius: radius.md,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: radius.md,
+    borderWidth: 1,
   },
-  loadingRow: {
+  buttonInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm + 2,
+    justifyContent: 'center',
+    gap: spacing.xs + 2,
+    height: 48,
   },
   buttonIconBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  runLabel: { fontSize: 15, fontWeight: '800', letterSpacing: 0.8 },
+  spinner: {
+    width: 16,
+    height: 16,
+    transform: [{ scale: 0.85 }],
+  },
+  runLabel: {
+    fontSize: 13,
+    fontWeight: '500',
+    letterSpacing: 0.1,
+  },
 });
-

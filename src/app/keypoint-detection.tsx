@@ -1,29 +1,29 @@
 import { useState } from 'react';
-import { models, useObjectDetector, type ObjectDetection } from 'react-native-executorch';
+import { models, useKeypointDetector, type KeypointDetection } from 'react-native-executorch';
 
-import { DetectionOverlay } from '@/components/DetectionOverlay';
+import { KeypointOverlay } from '@/components/KeypointOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
 
-function ObjectDetectionTask() {
+function KeypointDetectionTask() {
   const [busy, setBusy] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
-  const [results, setResults] = useState<ObjectDetection<'xyxy', string>[]>([]);
+  const [results, setResults] = useState<KeypointDetection<'xyxy', string>[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const detector = useObjectDetector(models.objectDetection.SSDLITE320_MOBILENET_V3_LARGE.DEFAULT);
+  const detector = useKeypointDetector(models.keypointDetection.YOLO26_POSE.DEFAULT);
 
   const run = async () => {
-    if (!image || !detector.detectObjects) return;
+    if (!image || !detector.detectKeypoints) return;
     setBusy(true);
     setResults([]);
     setLatency(null);
     setError(null);
     try {
       const t0 = Date.now();
-      const output = await detector.detectObjects(image.buffer);
+      const output = await detector.detectKeypoints(image.buffer);
       setLatency(Date.now() - t0);
       setResults(output);
     } catch (err: any) {
@@ -35,13 +35,13 @@ function ObjectDetectionTask() {
 
   return (
     <TaskScreen
-      title="Object Detection"
-      subtitle="SSDLite MobileNetV3"
+      title="Pose Estimation"
+      subtitle="YOLO26 Pose"
       status={{ ...detector, error: error || detector.error }}
       canRun={!!image && detector.isReady}
       busy={busy}
       onRun={run}
-      runLabel="Detect Objects"
+      runLabel="Estimate Pose"
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >
       <PhotoPicker
@@ -53,17 +53,17 @@ function ObjectDetectionTask() {
           setError(null);
         }}
         renderOverlay={(transform) => (
-          <DetectionOverlay detections={results} transform={transform} />
+          <KeypointOverlay detections={results} transform={transform} />
         )}
       />
     </TaskScreen>
   );
 }
 
-export default function ObjectDetectionScreen() {
+export default function KeypointDetectionScreen() {
   return (
     <ScreenWrapper>
-      <ObjectDetectionTask />
+      <KeypointDetectionTask />
     </ScreenWrapper>
   );
 }

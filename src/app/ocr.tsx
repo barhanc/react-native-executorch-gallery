@@ -1,29 +1,29 @@
 import { useState } from 'react';
-import { models, useObjectDetector, type ObjectDetection } from 'react-native-executorch';
+import { models, useOpticalCharacterRecognizer, type OcrDetection } from 'react-native-executorch';
 
-import { DetectionOverlay } from '@/components/DetectionOverlay';
+import { OcrOverlay } from '@/components/OcrOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
 
-function ObjectDetectionTask() {
+function OcrTask() {
   const [busy, setBusy] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
-  const [results, setResults] = useState<ObjectDetection<'xyxy', string>[]>([]);
+  const [results, setResults] = useState<OcrDetection[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const detector = useObjectDetector(models.objectDetection.SSDLITE320_MOBILENET_V3_LARGE.DEFAULT);
+  const ocr = useOpticalCharacterRecognizer(models.ocr.PADDLE.PPOCRV6_SMALL.DEFAULT);
 
   const run = async () => {
-    if (!image || !detector.detectObjects) return;
+    if (!image || !ocr.recognizeCharacters) return;
     setBusy(true);
     setResults([]);
     setLatency(null);
     setError(null);
     try {
       const t0 = Date.now();
-      const output = await detector.detectObjects(image.buffer);
+      const output = await ocr.recognizeCharacters(image.buffer);
       setLatency(Date.now() - t0);
       setResults(output);
     } catch (err: any) {
@@ -35,16 +35,17 @@ function ObjectDetectionTask() {
 
   return (
     <TaskScreen
-      title="Object Detection"
-      subtitle="SSDLite MobileNetV3"
-      status={{ ...detector, error: error || detector.error }}
-      canRun={!!image && detector.isReady}
+      title="OCR Text Recognition"
+      subtitle="PaddleOCR PP-OCRv6"
+      status={{ ...ocr, error: error || ocr.error }}
+      canRun={!!image && ocr.isReady}
       busy={busy}
       onRun={run}
-      runLabel="Detect Objects"
+      runLabel="Recognize Text"
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >
       <PhotoPicker
+        targetWidth={null}
         busy={busy}
         onPick={(img) => {
           setImage(img);
@@ -52,18 +53,16 @@ function ObjectDetectionTask() {
           setLatency(null);
           setError(null);
         }}
-        renderOverlay={(transform) => (
-          <DetectionOverlay detections={results} transform={transform} />
-        )}
+        renderOverlay={(transform) => <OcrOverlay detections={results} transform={transform} />}
       />
     </TaskScreen>
   );
 }
 
-export default function ObjectDetectionScreen() {
+export default function OCRScreen() {
   return (
     <ScreenWrapper>
-      <ObjectDetectionTask />
+      <OcrTask />
     </ScreenWrapper>
   );
 }

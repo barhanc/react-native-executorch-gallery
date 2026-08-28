@@ -23,12 +23,12 @@ export function skImageToBuffer(image: SkImage): ImageBuffer {
 }
 
 /**
- * Pick an image from the library or camera, downscaled to `targetWidth`, and
- * return a local file URI (or undefined if cancelled).
+ * Pick an image from the library or camera.
+ * If `targetWidth` is provided, downscales the image; otherwise preserves full original resolution.
  */
 export async function pickImage(
   source: 'camera' | 'library',
-  targetWidth = 800
+  targetWidth?: number
 ): Promise<string | undefined> {
   const permission =
     source === 'camera'
@@ -46,9 +46,13 @@ export async function pickImage(
       : await ImagePicker.launchImageLibraryAsync(options);
   if (result.canceled || !result.assets[0]) return;
 
-  const rendered = await ImageManipulator.manipulate(result.assets[0].uri)
-    .resize({ width: targetWidth })
-    .renderAsync();
-  const saved = await rendered.saveAsync({ format: SaveFormat.PNG });
-  return saved.uri;
+  if (targetWidth != null) {
+    const rendered = await ImageManipulator.manipulate(result.assets[0].uri)
+      .resize({ width: targetWidth })
+      .renderAsync();
+    const saved = await rendered.saveAsync({ format: SaveFormat.PNG });
+    return saved.uri;
+  }
+
+  return result.assets[0].uri;
 }

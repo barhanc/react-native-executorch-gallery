@@ -1,29 +1,29 @@
 import { useState } from 'react';
-import { models, useObjectDetector, type ObjectDetection } from 'react-native-executorch';
+import { models, useClassifier } from 'react-native-executorch';
 
-import { DetectionOverlay } from '@/components/DetectionOverlay';
+import { ClassificationOverlay } from '@/components/ClassificationOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
 
-function ObjectDetectionTask() {
+function ImageClassificationTask() {
   const [busy, setBusy] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
-  const [results, setResults] = useState<ObjectDetection<'xyxy', string>[]>([]);
+  const [results, setResults] = useState<{ label: string; confidence: number }[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const detector = useObjectDetector(models.objectDetection.SSDLITE320_MOBILENET_V3_LARGE.DEFAULT);
+  const classifier = useClassifier(models.classification.EFFICIENTNET_V2_S.DEFAULT);
 
   const run = async () => {
-    if (!image || !detector.detectObjects) return;
+    if (!image || !classifier.classify) return;
     setBusy(true);
     setResults([]);
     setLatency(null);
     setError(null);
     try {
       const t0 = Date.now();
-      const output = await detector.detectObjects(image.buffer);
+      const output = await classifier.classify(image.buffer, { topk: 3 });
       setLatency(Date.now() - t0);
       setResults(output);
     } catch (err: any) {
@@ -35,13 +35,13 @@ function ObjectDetectionTask() {
 
   return (
     <TaskScreen
-      title="Object Detection"
-      subtitle="SSDLite MobileNetV3"
-      status={{ ...detector, error: error || detector.error }}
-      canRun={!!image && detector.isReady}
+      title="Image Classification"
+      subtitle="EfficientNetV2-S"
+      status={{ ...classifier, error: error || classifier.error }}
+      canRun={!!image && classifier.isReady}
       busy={busy}
       onRun={run}
-      runLabel="Detect Objects"
+      runLabel="Classify Image"
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >
       <PhotoPicker
@@ -52,18 +52,16 @@ function ObjectDetectionTask() {
           setLatency(null);
           setError(null);
         }}
-        renderOverlay={(transform) => (
-          <DetectionOverlay detections={results} transform={transform} />
-        )}
+        renderOverlay={() => <ClassificationOverlay results={results} />}
       />
     </TaskScreen>
   );
 }
 
-export default function ObjectDetectionScreen() {
+export default function ImageClassificationScreen() {
   return (
     <ScreenWrapper>
-      <ObjectDetectionTask />
+      <ImageClassificationTask />
     </ScreenWrapper>
   );
 }

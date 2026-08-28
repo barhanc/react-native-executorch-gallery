@@ -1,13 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import {
-  Canvas,
-  Group,
-  LinearGradient,
-  Path,
-  Skia,
-  vec,
-} from '@shopify/react-native-skia';
+import { Canvas, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 
 const LOGO_PATHS = [
   {
@@ -42,16 +35,23 @@ const LOGO_PATHS = [
   },
 ];
 
+export interface LogoProps {
+  /** Width size in points (height is scaled proportionally to 330:419 aspect ratio). */
+  size?: number;
+  /** Tuple of linear gradient start and end hex color strings. */
+  colors?: [string, string];
+}
+
 /**
  * Official React Native ExecuTorch gradient flame emblem.
+ *
+ * Rendered using hardware Skia vector paths with precise subpixel gradient
+ * coordinates matching the official Software Mansion brand vector specification.
+ *
+ * @param props Logo size and gradient colors.
+ * @returns Skia canvas rendering the vector emblem.
  */
-export function Logo({
-  size = 36,
-  colors = ['#2A47FF', '#D0E2FF'],
-}: {
-  size?: number;
-  colors?: [string, string];
-}) {
+export function Logo({ size = 36, colors = ['#2A47FF', '#D0E2FF'] }: LogoProps) {
   const width = size;
   const height = Math.round((size * 419) / 330);
   const scale = size / 330;
@@ -71,11 +71,7 @@ export function Logo({
             if (!item.path) return null;
             return (
               <Path key={idx} path={item.path}>
-                <LinearGradient
-                  start={item.start}
-                  end={item.end}
-                  colors={colors}
-                />
+                <LinearGradient start={item.start} end={item.end} colors={colors} />
               </Path>
             );
           })}

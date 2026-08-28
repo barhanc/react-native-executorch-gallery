@@ -1,29 +1,33 @@
 import { useState } from 'react';
-import { models, useObjectDetector, type ObjectDetection } from 'react-native-executorch';
+import {
+  models,
+  useInstanceSegmenter,
+  type InstanceSegmentationResult,
+} from 'react-native-executorch';
 
-import { DetectionOverlay } from '@/components/DetectionOverlay';
+import { InstanceSegmentationOverlay } from '@/components/InstanceSegmentationOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
 
-function ObjectDetectionTask() {
+function InstanceSegmentationTask() {
   const [busy, setBusy] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
-  const [results, setResults] = useState<ObjectDetection<'xyxy', string>[]>([]);
+  const [results, setResults] = useState<InstanceSegmentationResult<'xyxy', string>[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const detector = useObjectDetector(models.objectDetection.SSDLITE320_MOBILENET_V3_LARGE.DEFAULT);
+  const segmenter = useInstanceSegmenter(models.instanceSegmentation.YOLO26.NANO.DEFAULT);
 
   const run = async () => {
-    if (!image || !detector.detectObjects) return;
+    if (!image || !segmenter.segmentInstances) return;
     setBusy(true);
     setResults([]);
     setLatency(null);
     setError(null);
     try {
       const t0 = Date.now();
-      const output = await detector.detectObjects(image.buffer);
+      const output = await segmenter.segmentInstances(image.buffer);
       setLatency(Date.now() - t0);
       setResults(output);
     } catch (err: any) {
@@ -35,13 +39,13 @@ function ObjectDetectionTask() {
 
   return (
     <TaskScreen
-      title="Object Detection"
-      subtitle="SSDLite MobileNetV3"
-      status={{ ...detector, error: error || detector.error }}
-      canRun={!!image && detector.isReady}
+      title="Instance Segmentation"
+      subtitle="YOLO26 Nano"
+      status={{ ...segmenter, error: error || segmenter.error }}
+      canRun={!!image && segmenter.isReady}
       busy={busy}
       onRun={run}
-      runLabel="Detect Objects"
+      runLabel="Segment Instances"
       meta={latency != null ? `Inference ${latency} ms` : undefined}
     >
       <PhotoPicker
@@ -53,17 +57,22 @@ function ObjectDetectionTask() {
           setError(null);
         }}
         renderOverlay={(transform) => (
-          <DetectionOverlay detections={results} transform={transform} />
+          <InstanceSegmentationOverlay
+            instances={results}
+            imageWidth={image?.width ?? 0}
+            imageHeight={image?.height ?? 0}
+            transform={transform}
+          />
         )}
       />
     </TaskScreen>
   );
 }
 
-export default function ObjectDetectionScreen() {
+export default function InstanceSegmentationScreen() {
   return (
     <ScreenWrapper>
-      <ObjectDetectionTask />
+      <InstanceSegmentationTask />
     </ScreenWrapper>
   );
 }

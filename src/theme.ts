@@ -75,4 +75,3 @@ export function useTheme() {
   const scheme: 'light' | 'dark' = useColorScheme() === 'dark' ? 'dark' : 'light';
   return { colors: palette[scheme], scheme, spacing, radius };
 }
-

@@ -12,6 +12,7 @@ type Task = {
   subtitle: string;
   model: string;
   iconName: IconName;
+  tint: string;
   ready?: boolean;
 };
 
@@ -30,30 +31,102 @@ const SECTIONS: Section[] = [
         href: '/object-detection',
         title: 'Object Detection',
         subtitle: 'Locate and classify multiple objects in photos',
-        model: 'SSDLite MobileNetV3 · COCO',
+        model: 'SSDLite MobileNetV3',
         iconName: 'scan',
+        tint: '#2A47FF',
+        ready: true,
+      },
+      {
+        href: '/image-classification',
+        title: 'Image Classification',
+        subtitle: 'Identify 1,000 object categories with confidence',
+        model: 'EfficientNetV2-S',
+        iconName: 'photo',
+        tint: '#0284C7',
+        ready: true,
+      },
+      {
+        href: '/style-transfer',
+        title: 'Style Transfer',
+        subtitle: 'Transform photos into artistic paintings',
+        model: 'Candy Style',
+        iconName: 'palette',
+        tint: '#D946EF',
+        ready: true,
+      },
+      {
+        href: '/keypoint-detection',
+        title: 'Pose Estimation',
+        subtitle: 'Estimate 17 human body skeletal keypoints',
+        model: 'YOLO26 Pose',
+        iconName: 'person',
+        tint: '#059669',
+        ready: true,
+      },
+      {
+        href: '/semantic-segmentation',
+        title: 'Semantic Segmentation',
+        subtitle: 'Segment objects by class with pixel-level masks',
+        model: 'DeepLabV3 MobileNetV3',
+        iconName: 'splitMask',
+        tint: '#10B981',
+        ready: true,
+      },
+      {
+        href: '/instance-segmentation',
+        title: 'Instance Segmentation',
+        subtitle: 'Detect and mask individual object instances',
+        model: 'YOLO26 Nano',
+        iconName: 'scissors',
+        tint: '#8B5CF6',
+        ready: true,
+      },
+      {
+        href: '/ocr',
+        title: 'OCR Text Recognition',
+        subtitle: 'Detect and read multilingual text in photos',
+        model: 'PaddleOCR PP-OCRv6',
+        iconName: 'textDoc',
+        tint: '#EA580C',
         ready: true,
       },
     ],
   },
   {
-    title: 'Natural Language',
-    description: 'Generative chat, embedding vectors & tokenizers',
+    title: 'Generative AI',
+    description: 'On-device generative image synthesis & conversational reasoning',
     tasks: [
       {
-        href: '/llm-chat',
-        title: 'LLM Chat & Generation',
-        subtitle: 'Interactive on-device conversational assistant',
-        model: 'Llama 3.2 1B · Qwen 2.5',
-        iconName: 'chat',
+        href: '/text-to-image',
+        title: 'Text to Image',
+        subtitle: 'Generate synthetic imagery from natural language prompts',
+        model: 'SDXS 512 DreamShaper',
+        iconName: 'sparkle',
+        tint: '#EC4899',
         ready: false,
       },
       {
-        href: '/text-embeddings',
-        title: 'Text Embeddings',
-        subtitle: 'Dense vector representations for semantic search',
-        model: 'All-MiniLM-L6-v2',
+        href: '/llm-chat',
+        title: 'LLM Chat & Reasoning',
+        subtitle: 'Interactive conversational assistant with on-device LLMs',
+        model: 'Llama 3.2 1B',
+        iconName: 'chat',
+        tint: '#8B5CF6',
+        ready: false,
+      },
+    ],
+  },
+  {
+    title: 'Embeddings & Vectors',
+    description: 'Dense vector representations for semantic search and retrieval',
+    tasks: [
+      {
+        href: '/image-embeddings',
+        title: 'Multimodal Search',
+        subtitle: 'Rank text queries against images with CLIP',
+        model: 'CLIP ViT-B/32',
         iconName: 'embeddings',
+        tint: '#6366F1',
         ready: false,
       },
     ],
@@ -66,8 +139,9 @@ const SECTIONS: Section[] = [
         href: '/speech-to-text',
         title: 'Speech to Text',
         subtitle: 'Multi-lingual automatic speech recognition',
-        model: 'Whisper Tiny / Base',
+        model: 'Whisper Tiny',
         iconName: 'mic',
+        tint: '#F59E0B',
         ready: false,
       },
       {
@@ -76,6 +150,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Expressive neural voice synthesis',
         model: 'Kokoro 82M',
         iconName: 'audio',
+        tint: '#E11D48',
         ready: false,
       },
     ],
@@ -100,23 +175,24 @@ export default function Home() {
       {/* Header Block */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
-          <Logo size={36} />
+          <Logo size={42} />
           <View style={styles.brandText}>
             <Text style={[styles.title, { color: colors.text }]}>React Native ExecuTorch</Text>
-            <Text style={[styles.subtitle, { color: colors.textDim }]}>
-              On-device machine learning showcase
-            </Text>
+            <View style={styles.galleryBadgeRow}>
+              <Text style={[styles.galleryWord, { color: colors.accent }]}>GALLERY</Text>
+            </View>
           </View>
         </View>
+        <Text style={[styles.subtitle, { color: colors.textDim }]}>
+          On-device machine learning showcase and interactive task gallery
+        </Text>
       </View>
 
       {/* Sections */}
       {SECTIONS.map((section) => (
         <View key={section.title} style={{ gap: spacing.sm + 2 }}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              {section.title}
-            </Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.title}</Text>
             <Text style={[styles.sectionDesc, { color: colors.textMuted }]}>
               {section.description}
             </Text>
@@ -160,14 +236,14 @@ function TaskCard({ task }: { task: Task }) {
         style={[
           styles.iconTile,
           isAvailable
-            ? { backgroundColor: colors.accentSoft, borderColor: colors.accentBorder }
+            ? { backgroundColor: task.tint + '14', borderColor: task.tint + '30' }
             : { backgroundColor: colors.surfaceSubtle, borderColor: colors.borderSubtle },
         ]}
       >
         <Icon
           name={task.iconName}
           size={22}
-          color={isAvailable ? colors.accent : colors.textSecondary}
+          color={isAvailable ? task.tint : colors.textSecondary}
           strokeWidth={2}
         />
       </View>
@@ -195,9 +271,7 @@ function TaskCard({ task }: { task: Task }) {
             { backgroundColor: colors.surfaceSubtle, borderColor: colors.borderSubtle },
           ]}
         >
-          <Text style={[styles.modelText, { color: colors.textSecondary }]}>
-            {task.model}
-          </Text>
+          <Text style={[styles.modelText, { color: colors.textSecondary }]}>{task.model}</Text>
         </View>
       </View>
 
@@ -217,10 +291,29 @@ const styles = StyleSheet.create({
   },
   brandText: {
     flex: 1,
-    gap: 2,
+    gap: 3,
   },
-  title: { fontSize: 24, fontWeight: '800', letterSpacing: -0.5 },
-  subtitle: { fontSize: 13, lineHeight: 18 },
+  title: {
+    fontSize: 21,
+    fontWeight: '800',
+    letterSpacing: -0.4,
+    lineHeight: 25,
+  },
+  galleryBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 1,
+  },
+  galleryWord: {
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 2,
+  },
+  subtitle: {
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: spacing.xs,
+  },
   sectionHeader: { gap: 2, paddingHorizontal: 2 },
   sectionTitle: { fontSize: 15, fontWeight: '700', letterSpacing: -0.2 },
   sectionDesc: { fontSize: 12 },
@@ -266,5 +359,3 @@ const styles = StyleSheet.create({
   },
   soonText: { fontSize: 10, fontWeight: '600', textTransform: 'uppercase' },
 });
-
-
