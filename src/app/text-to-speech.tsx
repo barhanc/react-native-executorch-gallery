@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Keyboard } from 'react-native';
-import { models, useTextToSpeech } from 'react-native-executorch';
+import { KOKORO_SAMPLE_RATE, models, useTextToSpeech } from 'react-native-executorch';
 
 import { AudioWaveformVisualizer } from '@/components/AudioWaveformVisualizer';
 import { PromptInput } from '@/components/PromptInput';
@@ -25,7 +25,7 @@ function TextToSpeechTask() {
   const tts = useTextToSpeech(models.textToSpeech.KOKORO.EN_US.DEFAULT, {
     preventLoad: !loaded,
   });
-  const player = useAudioPlayer();
+  const player = useAudioPlayer(KOKORO_SAMPLE_RATE);
 
   const handleStop = () => {
     tts.synthesizeStop?.();

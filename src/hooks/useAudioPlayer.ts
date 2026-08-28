@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AudioContext, type AudioBufferQueueSourceNode } from 'react-native-audio-api';
-import { KOKORO_SAMPLE_RATE } from 'react-native-executorch';
 
 /**
  * An audio chunk yielded by a speech synthesis stream.
@@ -20,7 +19,7 @@ export interface AudioPlayerState {
   isPlaying: boolean;
   /**
    * Consumes an async generator of TTS chunks, enqueuing and playing them in real-time.
-   * Calls `onFirstAudio` as soon as the first chunk starts playing.
+   * Resolves once all chunks have finished playing.
    *
    * @param chunks Async iterable stream of audio chunks.
    * @param onFirstAudio Optional callback invoked when the first audio buffer starts.
@@ -37,23 +36,26 @@ export interface AudioPlayerState {
  * streams incoming audio chunk buffers directly to native audio output, and
  * guarantees cleanup on unmount or cancellation.
  *
+ * @param sampleRate The target audio sampling rate in Hz (e.g. 44100 for Supertonic, 24000 for Kokoro).
  * @returns Audio playback state and controller methods.
  */
-export function useAudioPlayer(): AudioPlayerState {
+export function useAudioPlayer(sampleRate: number): AudioPlayerState {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const queueSourceRef = useRef<AudioBufferQueueSourceNode | null>(null);
   const completionResolverRef = useRef<(() => void) | null>(null);
+  const lastEnqueuedBufferIdRef = useRef<string | null>(null);
+  const streamDoneRef = useRef(false);
 
   const getAudioContext = useCallback(async () => {
     if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
-      audioCtxRef.current = new AudioContext({ sampleRate: KOKORO_SAMPLE_RATE });
+      audioCtxRef.current = new AudioContext({ sampleRate });
     }
     if (audioCtxRef.current.state === 'suspended') {
       await audioCtxRef.current.resume();
     }
     return audioCtxRef.current;
-  }, []);
+  }, [sampleRate]);
 
   const stop = useCallback(() => {
     if (queueSourceRef.current) {
@@ -62,6 +64,8 @@ export function useAudioPlayer(): AudioPlayerState {
       queueSourceRef.current = null;
     }
     setIsPlaying(false);
+    lastEnqueuedBufferIdRef.current = null;
+    streamDoneRef.current = false;
     if (completionResolverRef.current) {
       completionResolverRef.current();
       completionResolverRef.current = null;
@@ -75,13 +79,19 @@ export function useAudioPlayer(): AudioPlayerState {
       const source = ctx.createBufferQueueSource();
       source.connect(ctx.destination);
       queueSourceRef.current = source;
+      lastEnqueuedBufferIdRef.current = null;
+      streamDoneRef.current = false;
 
       let started = false;
 
       const playbackFinished = new Promise<void>((resolve) => {
         completionResolverRef.current = resolve;
         source.onBufferEnded = (event) => {
-          if (event.isLastBufferInQueue) {
+          if (
+            streamDoneRef.current &&
+            event.bufferId != null &&
+            event.bufferId === lastEnqueuedBufferIdRef.current
+          ) {
             setIsPlaying(false);
             completionResolverRef.current = null;
             resolve();
@@ -94,7 +104,8 @@ export function useAudioPlayer(): AudioPlayerState {
           if (queueSourceRef.current !== source) break;
           const buffer = ctx.createBuffer(1, chunk.audio.length, chunk.sampleRate);
           buffer.copyToChannel(chunk.audio as Float32Array<ArrayBuffer>, 0);
-          source.enqueueBuffer(buffer);
+          const bufferId = source.enqueueBuffer(buffer);
+          lastEnqueuedBufferIdRef.current = bufferId;
 
           if (!started) {
             started = true;
@@ -103,6 +114,7 @@ export function useAudioPlayer(): AudioPlayerState {
             onFirstAudio?.();
           }
         }
+        streamDoneRef.current = true;
       } catch (e) {
         stop();
         throw e;

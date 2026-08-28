@@ -101,12 +101,11 @@ export function PromptInput({
               {suggestions.map((suggestion) => (
                 <Pressable
                   key={suggestion}
-                  disabled={isPlaying || disabled}
                   onPress={() => onChangeText(suggestion)}
                   style={({ pressed }) => [
                     styles.chip,
                     { backgroundColor: colors.surfaceSubtle, borderColor: colors.border },
-                    { opacity: pressed ? 0.7 : isPlaying || disabled ? 0.5 : 1 },
+                    { opacity: pressed ? 0.7 : 1 },
                   ]}
                 >
                   <Text
@@ -147,7 +146,6 @@ export function PromptInput({
             placeholder={placeholder}
             placeholderTextColor={colors.textMuted}
             multiline
-            editable={!isPlaying && !disabled}
             onSubmitEditing={handlePress}
             returnKeyType="send"
           />
