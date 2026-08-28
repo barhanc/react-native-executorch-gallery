@@ -9,7 +9,7 @@ import {
   vec,
 } from '@shopify/react-native-skia';
 
-const PATH_DATA = [
+const LOGO_PATHS = [
   {
     d: 'M203.91 160.29C207.682 181.336 201.405 205.773 192.213 222.983C175.794 253.759 151.925 263.141 122.288 278.862C112.589 283.363 89.3224 291.699 80.035 296.643C17.2419 330.081 33.1859 375.786 67.9265 400.794C84.6312 412.806 105.647 420.033 124.412 418.796C55.8497 423.202 -43.8395 315.47 22.2819 258.545C76.6117 211.795 158.043 220.416 203.91 160.29Z',
     start: vec(0.6, 289.6),
@@ -47,7 +47,7 @@ const PATH_DATA = [
  */
 export function Logo({
   size = 36,
-  colors = ['#2A47FF', '#93C5FD'],
+  colors = ['#2A47FF', '#D0E2FF'],
 }: {
   size?: number;
   colors?: [string, string];
@@ -57,7 +57,7 @@ export function Logo({
   const scale = size / 330;
 
   const paths = React.useMemo(() => {
-    return PATH_DATA.map((item) => {
+    return LOGO_PATHS.map((item) => {
       const p = Skia.Path.MakeFromSVGString(item.d);
       return { path: p, start: item.start, end: item.end };
     });

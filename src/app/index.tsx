@@ -12,7 +12,6 @@ type Task = {
   subtitle: string;
   model: string;
   iconName: IconName;
-  tint: string;
   ready?: boolean;
 };
 
@@ -33,7 +32,6 @@ const SECTIONS: Section[] = [
         subtitle: 'Locate and classify multiple objects in photos',
         model: 'SSDLite MobileNetV3 · COCO',
         iconName: 'scan',
-        tint: '#2563EB',
         ready: true,
       },
     ],
@@ -48,7 +46,6 @@ const SECTIONS: Section[] = [
         subtitle: 'Interactive on-device conversational assistant',
         model: 'Llama 3.2 1B · Qwen 2.5',
         iconName: 'chat',
-        tint: '#7C3AED',
         ready: false,
       },
       {
@@ -57,7 +54,6 @@ const SECTIONS: Section[] = [
         subtitle: 'Dense vector representations for semantic search',
         model: 'All-MiniLM-L6-v2',
         iconName: 'embeddings',
-        tint: '#059669',
         ready: false,
       },
     ],
@@ -72,7 +68,6 @@ const SECTIONS: Section[] = [
         subtitle: 'Multi-lingual automatic speech recognition',
         model: 'Whisper Tiny / Base',
         iconName: 'mic',
-        tint: '#D97706',
         ready: false,
       },
       {
@@ -81,7 +76,6 @@ const SECTIONS: Section[] = [
         subtitle: 'Expressive neural voice synthesis',
         model: 'Kokoro 82M',
         iconName: 'audio',
-        tint: '#DC2626',
         ready: false,
       },
     ],
@@ -165,10 +159,17 @@ function TaskCard({ task }: { task: Task }) {
       <View
         style={[
           styles.iconTile,
-          { backgroundColor: task.tint + '14', borderColor: task.tint + '30' },
+          isAvailable
+            ? { backgroundColor: colors.accentSoft, borderColor: colors.accentBorder }
+            : { backgroundColor: colors.surfaceSubtle, borderColor: colors.borderSubtle },
         ]}
       >
-        <Icon name={task.iconName} size={22} color={task.tint} strokeWidth={2} />
+        <Icon
+          name={task.iconName}
+          size={22}
+          color={isAvailable ? colors.accent : colors.textSecondary}
+          strokeWidth={2}
+        />
       </View>
 
       <View style={styles.cardBody}>

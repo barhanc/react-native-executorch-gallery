@@ -1,15 +1,13 @@
 /** A stable, pleasant color per class label (used by overlays and result rows). */
 const COLORS = [
-  '#2F6BFF',
-  '#12A594',
-  '#E5484D',
-  '#F2820D',
-  '#7C5CFF',
-  '#E5484D',
-  '#0EA5E9',
-  '#EC4899',
-  '#16A34A',
-  '#CA8A04',
+  '#2A47FF',
+  '#001A72',
+  '#38ACDD',
+  '#57B495',
+  '#FF6259',
+  '#F59E0B',
+  '#4B6CF4',
+  '#33488E',
 ];
 
 export function domainColor(label: string): string {

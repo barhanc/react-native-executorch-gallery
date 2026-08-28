@@ -81,7 +81,7 @@ export function PhotoPicker({
         style={[
           styles.viewport,
           {
-            backgroundColor: '#07090E',
+            backgroundColor: colors.surfaceSubtle,
             borderColor: colors.border,
           },
         ]}
@@ -105,15 +105,15 @@ export function PhotoPicker({
             <View
               style={[
                 styles.iconCircle,
-                { backgroundColor: '#131824', borderColor: '#1E293B' },
+                { backgroundColor: colors.surface, borderColor: colors.border },
               ]}
             >
-              <Icon name="camera" size={30} color={colors.accent} strokeWidth={2} />
+              <Icon name="camera" size={28} color={colors.accent} strokeWidth={2} />
             </View>
-            <Text style={[styles.placeholderTitle, { color: '#F8FAFC' }]}>
+            <Text style={[styles.placeholderTitle, { color: colors.text }]}>
               No Image Selected
             </Text>
-            <Text style={[styles.placeholderSub, { color: '#94A3B8' }]}>
+            <Text style={[styles.placeholderSub, { color: colors.textDim }]}>
               Take a photo or choose an image from your library
             </Text>
           </View>
@@ -160,13 +160,13 @@ function PickButton({
         styles.pickButton,
         isPrimary
           ? {
-              backgroundColor: colors.surface,
+              backgroundColor: colors.accentSoft,
               borderColor: colors.accentBorder,
               shadowColor: colors.accent,
               shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.15,
-              shadowRadius: 6,
-              elevation: 3,
+              shadowOpacity: 0.08,
+              shadowRadius: 4,
+              elevation: 1,
             }
           : {
               backgroundColor: colors.surface,
@@ -180,7 +180,7 @@ function PickButton({
     >
       <Icon
         name={iconName}
-        size={18}
+        size={17}
         color={isPrimary ? colors.accent : colors.textSecondary}
         strokeWidth={2.2}
       />

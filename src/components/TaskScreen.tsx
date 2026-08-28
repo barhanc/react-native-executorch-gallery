@@ -96,14 +96,14 @@ export function TaskScreen({
             styles.runButton,
             canRun && !busy
               ? {
-                  backgroundColor: '#1D5BFF',
-                  borderColor: '#60A5FA',
-                  borderWidth: 1.5,
-                  shadowColor: '#1D5BFF',
-                  shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: 0.5,
-                  shadowRadius: 12,
-                  elevation: 8,
+                  backgroundColor: colors.accent,
+                  borderColor: colors.accentBorder,
+                  borderWidth: 1,
+                  shadowColor: colors.accent,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 10,
+                  elevation: 6,
                 }
               : {
                   backgroundColor: colors.surfaceSubtle,
