@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'react-native';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 export default function RootLayout() {
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
@@ -8,7 +9,7 @@ export default function RootLayout() {
   const text = scheme === 'dark' ? '#F4F6FA' : '#0B0D12';
 
   return (
-    <>
+    <KeyboardProvider>
       <Stack
         screenOptions={{
           headerShadowVisible: false,
@@ -20,6 +21,6 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-    </>
+    </KeyboardProvider>
   );
 }

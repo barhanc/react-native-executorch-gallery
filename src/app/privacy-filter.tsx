@@ -10,12 +10,6 @@ import { TaskScreen } from '@/components/TaskScreen';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 import { spacing } from '@/theme';
 
-const SUGGESTIONS = [
-  'My name is Sarah Chen and I work as a senior engineer at Acme Corp. You can reach me at sarah.chen@acmecorp.io or call my direct line at (415) 923-0847. For billing inquiries, my account number is ACC-8821-4490-3371.',
-  'Contact me at john.doe@example.com or +1 (555) 123-4567.',
-  'My card number is 4111 1111 1111 1111 and SSN 123-45-6789.',
-];
-
 function PrivacyFilterTask() {
   const [input, setInput] = useState('');
   const [submitted, setSubmitted] = useState('');
@@ -87,14 +81,17 @@ function PrivacyFilterTask() {
   );
 }
 
+const SUGGESTIONS = [
+  'My name is Sarah Chen and I work as a senior engineer at Acme Corp. ' +
+    'You can reach me at sarah.chen@acmecorp.io or call my direct line at (415) 923-0847. ' +
+    'For billing inquiries, my account number is ACC-8821-4490-3371.',
+  'Contact me at john.doe@example.com or +1 (555) 123-4567.',
+  'My card number is 4111 1111 1111 1111 and SSN 123-45-6789.',
+];
+
 const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  body: {
-    gap: spacing.md,
-    paddingBottom: spacing.md,
-  },
+  scroll: { flex: 1 },
+  body: { gap: spacing.md, paddingBottom: spacing.md },
 });
 
 export default function PrivacyFilterScreen() {

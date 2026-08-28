@@ -1,14 +1,5 @@
 import React, { ReactNode } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 
@@ -94,84 +85,78 @@ export function TaskScreen({
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={insets.top + 44}
-      style={{ flex: 1 }}
+    <View
+      style={[
+        styles.root,
+        {
+          backgroundColor: colors.bg,
+          paddingTop: spacing.sm,
+          paddingHorizontal: spacing.lg,
+          paddingBottom: Math.max(insets.bottom, spacing.md) + spacing.xs,
+          gap: spacing.sm + 2,
+        },
+      ]}
     >
-      <View
-        style={[
-          styles.root,
-          {
-            backgroundColor: colors.bg,
-            paddingTop: spacing.sm,
-            paddingHorizontal: spacing.lg,
-            paddingBottom: Math.max(insets.bottom, spacing.md) + spacing.xs,
-            gap: spacing.sm + 2,
-          },
-        ]}
-      >
-        <Stack.Screen
-          options={{
-            title,
-            headerBackTitle: 'Gallery',
-            headerTintColor: colors.text,
-            headerStyle: { backgroundColor: colors.bg },
-            headerShadowVisible: false,
-          }}
-        />
+      <Stack.Screen
+        options={{
+          title,
+          headerBackTitle: 'Gallery',
+          headerTintColor: colors.text,
+          headerStyle: { backgroundColor: colors.bg },
+          headerShadowVisible: false,
+        }}
+      />
 
-        <View style={styles.headerBlock}>
-          <View style={styles.headerRow}>
-            {subtitle ? (
-              <View style={[styles.badge, { backgroundColor: tag.bg, borderColor: tag.border }]}>
-                <Text style={[styles.badgeText, { color: tag.fg }]}>{subtitle}</Text>
-              </View>
-            ) : null}
+      <View style={styles.headerBlock}>
+        <View style={styles.headerRow}>
+          {subtitle ? (
+            <View style={[styles.badge, { backgroundColor: tag.bg, borderColor: tag.border }]}>
+              <Text style={[styles.badgeText, { color: tag.fg }]}>{subtitle}</Text>
+            </View>
+          ) : null}
 
-            {onDeleteModel && status.isReady ? (
-              <Pressable
-                onPress={() => {
-                  Alert.alert(
-                    'Delete Model Weights',
-                    'Delete downloaded model weights from device storage to free up disk space?',
-                    [
-                      { text: 'Cancel', style: 'cancel' },
-                      {
-                        text: 'Delete',
-                        style: 'destructive',
-                        onPress: onDeleteModel,
-                      },
-                    ]
-                  );
-                }}
-                style={({ pressed }) => [
-                  styles.deleteBadge,
-                  {
-                    backgroundColor: colors.dangerSoft,
-                    borderColor: colors.danger,
-                    opacity: pressed ? 0.7 : 1,
-                  },
-                ]}
-              >
-                <Icon name="trash" size={12} color={colors.danger} strokeWidth={2} />
-                <Text style={[styles.deleteText, { color: colors.danger }]}>Delete model</Text>
-              </Pressable>
-            ) : null}
-          </View>
-
-          <StatusBanner status={status} meta={meta} />
+          {onDeleteModel && status.isReady ? (
+            <Pressable
+              onPress={() => {
+                Alert.alert(
+                  'Delete Model Weights',
+                  'Delete downloaded model weights from device storage to free up disk space?',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Delete',
+                      style: 'destructive',
+                      onPress: onDeleteModel,
+                    },
+                  ]
+                );
+              }}
+              style={({ pressed }) => [
+                styles.deleteBadge,
+                {
+                  backgroundColor: colors.dangerSoft,
+                  borderColor: colors.danger,
+                  opacity: pressed ? 0.7 : 1,
+                },
+              ]}
+            >
+              <Icon name="trash" size={12} color={colors.danger} strokeWidth={2} />
+              <Text style={[styles.deleteText, { color: colors.danger }]}>Delete model</Text>
+            </Pressable>
+          ) : null}
         </View>
 
-        <View style={styles.contentBody}>{children}</View>
-
-        <View style={styles.footer}>
-          {footer || (
-            <RunButton canRun={canRun} busy={busy} onPress={handleRunPress} label={runLabel} />
-          )}
-        </View>
+        <StatusBanner status={status} meta={meta} />
       </View>
-    </KeyboardAvoidingView>
+
+      <View style={styles.contentBody}>{children}</View>
+
+      <View style={styles.footer}>
+        {footer || (
+          <RunButton canRun={canRun} busy={busy} onPress={handleRunPress} label={runLabel} />
+        )}
+      </View>
+    </View>
   );
 }
 

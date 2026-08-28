@@ -16,6 +16,7 @@
         "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "resize",
       "package": "com.bhanc.reactnativeexecutorchgallery"
     },
     "web": {

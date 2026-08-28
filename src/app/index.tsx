@@ -1,10 +1,10 @@
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Image } from 'expo-image';
 
 import { borderWidth, radius, spacing, useTheme, tints } from '@/theme';
 import { Icon, type IconName } from '@/components/Icon';
-import { Logo } from '@/components/Logo';
 
 type Task = {
   href: string;
@@ -100,7 +100,7 @@ const SECTIONS: Section[] = [
         model: 'SDXS 512 DreamShaper',
         iconName: 'sparkle',
         tint: 'pink',
-        ready: false,
+        ready: true,
       },
       {
         href: '/llm-chat',
@@ -176,7 +176,7 @@ const SECTIONS: Section[] = [
 ];
 
 export default function Home() {
-  const { colors } = useTheme();
+  const { colors, scheme } = useTheme();
   const insets = useSafeAreaInsets();
 
   return (
@@ -192,14 +192,17 @@ export default function Home() {
     >
       {/* Header Block */}
       <View style={styles.header}>
-        <View style={styles.brandRow}>
-          <Logo size={40} />
-          <View style={styles.brandText}>
-            <Text style={[styles.title, { color: colors.text }]}>React Native ExecuTorch</Text>
-            <View style={styles.galleryBadgeRow}>
-              <Text style={[styles.galleryWord, { color: colors.accent }]}>GALLERY</Text>
-            </View>
-          </View>
+        <Image
+          source={
+            scheme === 'dark'
+              ? require('../../assets/images/logo-horizontal-dark.svg')
+              : require('../../assets/images/logo-horizontal.svg')
+          }
+          style={styles.brandImage}
+          contentFit="contain"
+        />
+        <View style={styles.galleryBadgeRow}>
+          <Text style={[styles.galleryWord, { color: colors.accent }]}>GALLERY</Text>
         </View>
         <Text style={[styles.subtitle, { color: colors.textDim }]}>
           Explore on-device machine learning with React Native ExecuTorch. Every task runs entirely
@@ -303,20 +306,10 @@ function TaskCard({ task }: { task: Task }) {
 
 const styles = StyleSheet.create({
   header: { gap: spacing.sm },
-  brandRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  brandText: {
-    flex: 1,
-    gap: 3,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '500',
-    letterSpacing: -0.2,
-    lineHeight: 29,
+  brandImage: {
+    width: '68%',
+    aspectRatio: 1139.63 / 332,
+    alignSelf: 'flex-start',
   },
   galleryBadgeRow: {
     flexDirection: 'row',

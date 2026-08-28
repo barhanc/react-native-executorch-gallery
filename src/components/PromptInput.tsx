@@ -8,6 +8,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { KeyboardStickyView } from 'react-native-keyboard-controller';
 
 import { borderWidth, radius, spacing, useTheme } from '@/theme';
 import { Icon } from '@/components/Icon';
@@ -58,7 +59,7 @@ export function PromptInput({
   };
 
   return (
-    <View style={styles.sticky}>
+    <KeyboardStickyView offset={{ closed: 0, opened: 0 }} style={styles.sticky}>
       <View style={styles.wrapper}>
         {suggestions && suggestions.length > 0 ? (
           <ScrollView
@@ -114,7 +115,7 @@ export function PromptInput({
           </Pressable>
         </View>
       </View>
-    </View>
+    </KeyboardStickyView>
   );
 }
 
