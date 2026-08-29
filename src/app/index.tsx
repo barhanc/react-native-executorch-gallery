@@ -114,6 +114,38 @@ const SECTIONS: Section[] = [
     ],
   },
   {
+    title: 'Audio & Speech',
+    tasks: [
+      {
+        href: '/speech-to-text',
+        title: 'Speech to Text',
+        subtitle: 'Multi-lingual automatic speech recognition',
+        model: 'Whisper Tiny',
+        iconName: 'mic',
+        tint: 'cyan',
+        ready: true,
+      },
+      {
+        href: '/text-to-speech',
+        title: 'Text to Speech',
+        subtitle: 'Expressive neural voice synthesis',
+        model: 'Kokoro 82M',
+        iconName: 'audio',
+        tint: 'purple',
+        ready: true,
+      },
+      {
+        href: '/voice-activity-detection',
+        title: 'Voice Activity Detection',
+        subtitle: 'Detect speech segments in real-time audio streams',
+        model: 'FSMN VAD',
+        iconName: 'pulse',
+        tint: 'blue',
+        ready: true,
+      },
+    ],
+  },
+  {
     title: 'Embeddings & Search',
     tasks: [
       {
@@ -123,38 +155,6 @@ const SECTIONS: Section[] = [
         model: 'CLIP ViT-B/32',
         iconName: 'embeddings',
         tint: 'blue',
-        ready: false,
-      },
-    ],
-  },
-  {
-    title: 'Audio & Speech',
-    tasks: [
-      {
-        href: '/speech-to-text',
-        title: 'Speech to Text',
-        subtitle: 'Multi-lingual automatic speech recognition',
-        model: 'Whisper Tiny',
-        iconName: 'mic',
-        tint: 'orange',
-        ready: false,
-      },
-      {
-        href: '/text-to-speech',
-        title: 'Text to Speech',
-        subtitle: 'Expressive neural voice synthesis',
-        model: 'Kokoro 82M',
-        iconName: 'audio',
-        tint: 'red',
-        ready: true,
-      },
-      {
-        href: '/voice-activity-detection',
-        title: 'Voice Activity Detection',
-        subtitle: 'Detect speech segments in real-time audio streams',
-        model: 'FSMN VAD',
-        iconName: 'pulse',
-        tint: 'green',
         ready: false,
       },
     ],
