@@ -32,12 +32,14 @@ export type IconName =
   | 'trash'
   | 'eye'
   | 'pulse'
-  | 'shield';
+  | 'shield'
+  | 'search';
 
 const ICON_MAP: Record<IconName, keyof typeof Ionicons.glyphMap> = {
   scan: 'scan-outline',
   chat: 'chatbubble-outline',
   embeddings: 'layers-outline',
+  search: 'search-outline',
   mic: 'mic-outline',
   audio: 'volume-high-outline',
   photo: 'image-outline',
