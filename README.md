@@ -13,7 +13,17 @@ machine learning tasks built with
 Each screen is a real, standalone example of idiomatic library usage, so it can
 be lifted straight into your own app.
 
-> _Media assets coming soon._
+## Showcase
+
+<div align="center">
+
+|                                  LLM Chat (LFM 2.5)                                  |                                     Text to Image (SDXS)                                     |                            Text to Speech (Kokoro)                             |                            OCR Text Recognition                            |
+| :----------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------: | :------------------------------------------------------------------------: |
+|          <img src="assets/demos/llm-chat.gif" width="180" alt="LLM Chat" />          |         <img src="assets/demos/text-to-image.gif" width="180" alt="Text to Image" />         | <img src="assets/demos/text-to-speech.gif" width="180" alt="Text to Speech" /> |    <img src="assets/demos/ocr.gif" width="180" alt="OCR Recognition" />    |
+|                             **Multimodal Search (CLIP)**                             |                                  **Instance Segmentation**                                   |                            **Privacy Filter (PII)**                            |                            **Gallery Overview**                            |
+| <img src="assets/demos/multimodal-search.gif" width="180" alt="Multimodal Search" /> | <img src="assets/demos/instance-segmentation.gif" width="180" alt="Instance Segmentation" /> | <img src="assets/demos/privacy-filter.gif" width="180" alt="Privacy Filter" /> | <img src="assets/demos/gallery-menu.gif" width="180" alt="Gallery Menu" /> |
+
+</div>
 
 ## Getting Started
 
