@@ -38,6 +38,32 @@ npm run ios       # or npm run android
 - React Native with the **New Architecture**
 - Expo SDK 57+ or React Native 0.74+
 
+## Development & Local Linking
+
+This showcase app is developed against the `rne-rewrite` branch of [`react-native-executorch`](https://github.com/software-mansion/react-native-executorch).
+
+Because the gallery consumes `react-native-executorch` as a standard npm dependency with native modules rather than an npm workspace symlink, local development uses a local [Verdaccio](https://verdaccio.org/) registry (`http://localhost:4873`):
+
+1. **Start Verdaccio and publish the library** (from the `react-native-executorch` repository on the `rne-rewrite` branch):
+
+   ```bash
+   git checkout rne-rewrite
+   # publish to local verdaccio
+   npm run local-publish # or verdaccio publish workflow
+   ```
+
+2. **Install in the gallery**:
+
+   ```bash
+   # configure npm to fetch react-native-executorch from local verdaccio
+   npm install react-native-executorch@0.0.0 --registry http://localhost:4873
+   ```
+
+3. **Rebuild Native Code**:
+   ```bash
+   npx pod-install   # or npm run ios / npm run android
+   ```
+
 ## Documentation
 
 The full library documentation lives in
