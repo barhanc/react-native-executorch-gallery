@@ -40,7 +40,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Estimate 17 human body skeletal keypoints',
         model: 'YOLO26 Pose',
         iconName: 'person',
-        tint: 'green',
+        tint: 'cyan',
         ready: true,
       },
       {
@@ -49,7 +49,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Detect and read multilingual text in photos',
         model: 'PaddleOCR PP-OCRv6',
         iconName: 'textDoc',
-        tint: 'orange',
+        tint: 'blue',
         ready: true,
       },
       {
@@ -67,7 +67,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Locate and classify multiple objects in photos',
         model: 'SSDLite MobileNetV3',
         iconName: 'scan',
-        tint: 'blue',
+        tint: 'green',
         ready: true,
       },
       {
@@ -85,7 +85,7 @@ const SECTIONS: Section[] = [
         subtitle: 'Identify 1,000 object categories with confidence',
         model: 'EfficientNetV2-S',
         iconName: 'eye',
-        tint: 'cyan',
+        tint: 'orange',
         ready: true,
       },
     ],
