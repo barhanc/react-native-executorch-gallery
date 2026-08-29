@@ -138,7 +138,7 @@ export function ChatViewport({ messages, streamingText, scrollRef }: ChatViewpor
             )}
 
             {/* Live Streaming Assistant Output */}
-            {streamingText !== null ? (
+            {typeof streamingText === 'string' && streamingText.length > 0 ? (
               <AssistantBubble content={streamingText} isStreaming />
             ) : null}
           </View>

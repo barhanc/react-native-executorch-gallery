@@ -67,6 +67,7 @@ function TextToImageTask() {
           onChangeText={setPrompt}
           onSubmit={run}
           disabled={busy}
+          isExecuting={busy}
           canSubmit={!!prompt.trim() && textToImage.isReady && !busy}
           suggestions={SUGGESTIONS}
           placeholder="Describe the image you want to generate…"

@@ -75,6 +75,7 @@ function TextToSpeechTask() {
           onChangeText={setPrompt}
           onSubmit={run}
           disabled={busy && !player.isPlaying}
+          isExecuting={busy && !player.isPlaying}
           isPlaying={player.isPlaying}
           onStop={handleStop}
           canSubmit={!!prompt.trim() && tts.isReady && !isExecuting}

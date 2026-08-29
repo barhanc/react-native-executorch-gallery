@@ -62,6 +62,7 @@ function PrivacyFilterTask() {
           onChangeText={setInput}
           onSubmit={run}
           disabled={busy}
+          isExecuting={busy}
           canSubmit={!!input.trim() && privacyFilter.isReady && !busy}
           suggestions={SUGGESTIONS}
           placeholder="Paste text to scan for emails, phone numbers, names…"

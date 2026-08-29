@@ -32,6 +32,8 @@ function LlmChatTask() {
     preventLoad: !loaded,
   });
 
+  const isPrefilling = streamingText === '';
+  const hasReceivedTokens = typeof streamingText === 'string' && streamingText.length > 0;
   const isGenerating = streamingText !== null;
 
   const sendMessage = async () => {
@@ -88,7 +90,8 @@ function LlmChatTask() {
           suggestions={SUGGESTIONS}
           disabled={!llm.isReady}
           canSubmit={!!input.trim() && llm.isReady && !isGenerating}
-          isPlaying={isGenerating}
+          isExecuting={isPrefilling}
+          isPlaying={hasReceivedTokens}
           onStop={() => llm.stop?.()}
         />
       }

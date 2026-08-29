@@ -29,6 +29,8 @@ export interface PromptInputProps {
   disabled?: boolean;
   /** Whether submitting is currently valid (e.g. not busy, input non-empty). */
   canSubmit?: boolean;
+  /** Whether an active execution is in progress (e.g. synthesizing audio or generating image). Shows spinner. */
+  isExecuting?: boolean;
   /** Whether an active task is running/playing that can be stopped. */
   isPlaying?: boolean;
   /** Callback fired when the user taps stop during active playback. */
@@ -58,6 +60,7 @@ export function PromptInput({
   placeholder = 'Type a message…',
   disabled = false,
   canSubmit = false,
+  isExecuting = false,
   isPlaying = false,
   onStop,
 }: PromptInputProps) {
@@ -164,7 +167,9 @@ export function PromptInput({
               { opacity: pressed ? 0.85 : 1 },
             ]}
           >
-            {isPlaying ? (
+            {isExecuting ? (
+              <ActivityIndicator size="small" color={colors.accent} />
+            ) : isPlaying ? (
               <Icon name="stop" size={18} color={colors.onAccent} />
             ) : (
               <Icon name="arrowUp" size={20} color={active ? colors.onAccent : colors.textMuted} />
