@@ -94,6 +94,15 @@ const SECTIONS: Section[] = [
     title: 'Generative AI',
     tasks: [
       {
+        href: '/llm-chat',
+        title: 'LLM Chat',
+        subtitle: 'Interactive on-device conversational assistant',
+        model: 'LFM 2.5 1.2B',
+        iconName: 'chat',
+        tint: 'neutral',
+        ready: true,
+      },
+      {
         href: '/text-to-image',
         title: 'Text to Image',
         subtitle: 'Generate synthetic imagery from natural language prompts',
@@ -101,15 +110,6 @@ const SECTIONS: Section[] = [
         iconName: 'sparkle',
         tint: 'pink',
         ready: true,
-      },
-      {
-        href: '/llm-chat',
-        title: 'LLM Chat & Reasoning',
-        subtitle: 'Interactive conversational assistant with on-device LLMs',
-        model: 'Llama 3.2 1B',
-        iconName: 'chat',
-        tint: 'purple',
-        ready: false,
       },
     ],
   },

@@ -164,9 +164,7 @@ export function PromptInput({
               { opacity: pressed ? 0.85 : 1 },
             ]}
           >
-            {disabled && !isPlaying ? (
-              <ActivityIndicator size="small" color={colors.accent} />
-            ) : isPlaying ? (
+            {isPlaying ? (
               <Icon name="stop" size={18} color={colors.onAccent} />
             ) : (
               <Icon name="arrowUp" size={20} color={active ? colors.onAccent : colors.textMuted} />
@@ -240,11 +238,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   chip: {
-    width: 160,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: radius.pill,
     borderWidth,
+    maxWidth: 260,
   },
   chipText: {
     fontSize: 14,

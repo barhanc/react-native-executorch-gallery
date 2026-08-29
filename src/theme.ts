@@ -79,6 +79,8 @@ export const tints = {
   purpleDark: '#b07eff',
   pink: '#ec4899',
   pinkDark: '#f472b6',
+  neutral: '#0F172A',
+  neutralDark: '#F8FAFC',
 } as const;
 
 /** Tinted background + text color pairs for PII entity categories. */
