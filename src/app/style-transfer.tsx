@@ -18,7 +18,7 @@ function StyleTransferTask() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const styleTransfer = useStyleTransfer(models.styleTransfer.CANDY.DEFAULT, {
+  const styleTransfer = useStyleTransfer(models.styleTransfer.MOSAIC.DEFAULT, {
     preventLoad: !loaded,
   });
 
@@ -47,7 +47,7 @@ function StyleTransferTask() {
   return (
     <TaskScreen
       title="Style Transfer"
-      subtitle="Candy Style"
+      subtitle="Mosaic Style"
       status={{ ...styleTransfer, error: error || styleTransfer.error }}
       onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       canRun={!!image && styleTransfer.isReady && !busy}

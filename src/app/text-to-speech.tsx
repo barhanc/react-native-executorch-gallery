@@ -10,9 +10,9 @@ import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 const SUGGESTIONS = [
-  'ExecuTorch brings PyTorch models straight to your mobile device with exceptional on-device performance. It enables low-latency machine learning inference without ever sending sensitive data to the cloud.',
-  'Kokoro is an efficient on-device text-to-speech model. It converts input text into phonemes, predicts token durations, and synthesizes natural, expressive speech in real-time.',
-  'The weather today is warm and sunny with a gentle breeze from the west. It is a wonderful day to go outside, explore nature, and enjoy the clear blue skies.',
+  'ExecuTorch brings fast PyTorch AI models directly to your mobile device.',
+  'Kokoro synthesizes natural, expressive speech on-device in real-time.',
+  'The weather today is warm and sunny with a clear blue sky.',
 ];
 
 function TextToSpeechTask() {

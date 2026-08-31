@@ -56,7 +56,7 @@ const SECTIONS: Section[] = [
         href: '/style-transfer',
         title: 'Style Transfer',
         subtitle: 'Transform photos into artistic paintings',
-        model: 'Candy Style',
+        model: 'Mosaic Style',
         iconName: 'palette',
         tint: 'pink',
         ready: true,
