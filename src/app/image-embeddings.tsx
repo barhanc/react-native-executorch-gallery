@@ -8,9 +8,9 @@ import { TaskScreen } from '@/components/TaskScreen';
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 const INITIAL_QUERIES: CandidateQueryItem[] = [
-  { id: '1', text: 'a photo of an animal or pet', score: null },
   { id: '2', text: 'a delicious plate of food', score: null },
   { id: '3', text: 'a scenic outdoor landscape', score: null },
+  { id: '1', text: 'a photo of an animal or pet', score: null },
   { id: '4', text: 'urban architecture and buildings', score: null },
   { id: '5', text: 'a group of people or portrait', score: null },
 ];

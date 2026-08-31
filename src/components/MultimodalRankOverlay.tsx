@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -18,6 +18,8 @@ export interface CandidateQueryItem {
 const ROW_HEIGHT = 32;
 const ROW_GAP = 4;
 const ROW_PITCH = ROW_HEIGHT + ROW_GAP; // 36px per row
+const VISIBLE_ROWS = 2;
+const VIEWPORT_HEIGHT = VISIBLE_ROWS * ROW_PITCH - ROW_GAP; // exactly 2 rows visible
 
 function CandidateQueryRow({
   item,
@@ -98,8 +100,8 @@ export interface MultimodalRankOverlayProps {
 /**
  * Floating glassmorphic overlay for Multimodal Search (CLIP zero-shot ranking).
  *
- * All candidate query rows are constrained strictly inside the card viewport and translate
- * smoothly along the Y-axis using target index coordinates without expanding or jumping.
+ * Shows the top two candidate query rows with smooth re-ordering animation and vertical scrolling
+ * for additional candidates.
  *
  * @param props Candidate query items.
  * @returns Self-contained, bounded floating rank card.
@@ -107,8 +109,8 @@ export interface MultimodalRankOverlayProps {
 export function MultimodalRankOverlay({ items }: MultimodalRankOverlayProps) {
   const maxScore = Math.max(...items.map((i) => i.score ?? 0), 0.01);
 
-  // Compute total fixed list height so the card is perfectly sized
-  const listHeight = items.length * ROW_PITCH - ROW_GAP;
+  // Total content height for the absolute positioning inside ScrollView
+  const totalContentHeight = items.length * ROW_PITCH - ROW_GAP;
 
   // Sorted items determine each item's target index in the visual hierarchy
   const sortedItems = [...items].sort((a, b) => {
@@ -119,25 +121,32 @@ export function MultimodalRankOverlay({ items }: MultimodalRankOverlayProps) {
   });
 
   return (
-    <View style={styles.container} pointerEvents="none">
+    <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.headerRow}>
           <Text style={styles.headerTitle}>Semantic Match Ranking</Text>
         </View>
 
-        <View style={[styles.list, { height: listHeight }]}>
-          {items.map((item) => {
-            const targetIndex = sortedItems.findIndex((s) => s.id === item.id);
-            return (
-              <CandidateQueryRow
-                key={item.id}
-                item={item}
-                targetIndex={targetIndex}
-                maxScore={maxScore}
-              />
-            );
-          })}
-        </View>
+        <ScrollView
+          style={{ height: VIEWPORT_HEIGHT }}
+          contentContainerStyle={{ height: totalContentHeight }}
+          showsVerticalScrollIndicator
+          nestedScrollEnabled
+        >
+          <View style={[styles.list, { height: totalContentHeight }]}>
+            {items.map((item) => {
+              const targetIndex = sortedItems.findIndex((s) => s.id === item.id);
+              return (
+                <CandidateQueryRow
+                  key={item.id}
+                  item={item}
+                  targetIndex={targetIndex}
+                  maxScore={maxScore}
+                />
+              );
+            })}
+          </View>
+        </ScrollView>
       </View>
     </View>
   );
