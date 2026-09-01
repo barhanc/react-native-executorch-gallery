@@ -5,7 +5,9 @@ import { MultimodalRankOverlay, type CandidateQueryItem } from '@/components/Mul
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
+import { selectBackendModel } from '@/lib/models';
 
 const INITIAL_QUERIES: CandidateQueryItem[] = [
   { id: '2', text: 'a delicious plate of food', score: null },
@@ -14,6 +16,15 @@ const INITIAL_QUERIES: CandidateQueryItem[] = [
   { id: '4', text: 'urban architecture and buildings', score: null },
   { id: '5', text: 'a group of people or portrait', score: null },
 ];
+
+// TODO: remove when https://github.com/software-mansion/react-native-executorch/pull/1392 lands
+const IMAGE_MODEL = selectBackendModel({
+  coreml: models.imageEmbeddings.CLIP_VIT_BASE_PATCH32.COREML_FP16,
+  xnnpack: models.imageEmbeddings.CLIP_VIT_BASE_PATCH32.XNNPACK_FP32,
+});
+const TEXT_MODEL = selectBackendModel({
+  xnnpack: models.textEmbeddings.CLIP_VIT_BASE_PATCH32_TEXT.XNNPACK_FP32,
+});
 
 const dotProduct = (a: Float32Array, b: Float32Array): number =>
   a.reduce((sum, val, i) => sum + val * (b[i] ?? 0), 0);
@@ -26,12 +37,8 @@ function ImageEmbeddingsTask() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const imageModel = useImageEmbedder(models.imageEmbeddings.CLIP_VIT_BASE_PATCH32.XNNPACK_FP32, {
-    preventLoad: !loaded,
-  });
-  const textModel = useTextEmbedder(models.textEmbeddings.CLIP_VIT_BASE_PATCH32_TEXT.DEFAULT, {
-    preventLoad: !loaded,
-  });
+  const imageModel = useImageEmbedder(IMAGE_MODEL, { preventLoad: !loaded });
+  const textModel = useTextEmbedder(TEXT_MODEL, { preventLoad: !loaded });
 
   const isReady = imageModel.isReady && textModel.isReady;
   const downloadProgress = Math.min(imageModel.downloadProgress, textModel.downloadProgress);

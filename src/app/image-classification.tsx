@@ -1,23 +1,34 @@
 import { useState } from 'react';
-import { models, useClassifier } from 'react-native-executorch';
+import {
+  models,
+  useClassifier,
+  type Classification,
+  type ImageNet1KLabel,
+} from 'react-native-executorch';
 
 import { ClassificationOverlay } from '@/components/ClassificationOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
+import { selectBackendModel } from '@/lib/models';
+
+// TODO: remove when https://github.com/software-mansion/react-native-executorch/pull/1392 lands
+const MODEL = selectBackendModel({
+  coreml: models.classification.EFFICIENTNET_V2_S.COREML_FP16,
+  xnnpack: models.classification.EFFICIENTNET_V2_S.XNNPACK_INT8,
+});
 
 function ImageClassificationTask() {
   const [loaded, setLoaded] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
-  const [results, setResults] = useState<{ label: string; confidence: number }[]>([]);
+  const [results, setResults] = useState<Classification<ImageNet1KLabel>[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const classifier = useClassifier(models.classification.EFFICIENTNET_V2_S.DEFAULT, {
-    preventLoad: !loaded,
-  });
+  const classifier = useClassifier(MODEL, { preventLoad: !loaded });
 
   const run = async () => {
     if (!image || !classifier.classify) return;

@@ -5,15 +5,19 @@ import { MicActionButton } from '@/components/MicActionButton';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
 import { VadViewport } from '@/components/VadViewport';
+
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
+
+const MODEL = models.voiceActivityDetection.FSMN_VAD.DEFAULT;
 
 function VoiceActivityDetectionTask() {
   const [loaded, setLoaded] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const vad = useVoiceActivityDetector(models.voiceActivityDetection.FSMN_VAD.DEFAULT, {
+  const vad = useVoiceActivityDetector(MODEL, {
     preventLoad: !loaded,
   });
   const recorder = useAudioRecorder();
@@ -57,7 +61,10 @@ function VoiceActivityDetectionTask() {
     <TaskScreen
       title="Voice Activity Detection"
       subtitle="FSMN-VAD · Real-time"
-      status={{ ...vad, error: error || (vad.error ? vad.error.message : null) }}
+      status={{
+        ...vad,
+        error: error || (vad.error ? vad.error.message : null),
+      }}
       onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       busy={recorder.isRecording}
       onRun={() => undefined}

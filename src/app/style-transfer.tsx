@@ -5,9 +5,18 @@ import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { StyleTransferOverlay } from '@/components/StyleTransferOverlay';
 import { TaskScreen } from '@/components/TaskScreen';
-import { bufferToSkImage } from '@/lib/image';
+
 import { useDisposableImage } from '@/hooks/useDisposableImage';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
+import { bufferToSkImage } from '@/lib/image';
+import { selectBackendModel } from '@/lib/models';
+
+// TODO: remove when https://github.com/software-mansion/react-native-executorch/pull/1392 lands
+const MODEL = selectBackendModel({
+  coreml: models.styleTransfer.MOSAIC.COREML_FP16,
+  xnnpack: models.styleTransfer.MOSAIC.XNNPACK_INT8,
+});
 
 function StyleTransferTask() {
   const [loaded, setLoaded] = useState(false);
@@ -18,19 +27,17 @@ function StyleTransferTask() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const styleTransfer = useStyleTransfer(models.styleTransfer.MOSAIC.DEFAULT, {
-    preventLoad: !loaded,
-  });
+  const styler = useStyleTransfer(MODEL, { preventLoad: !loaded });
 
   const run = async () => {
-    if (busy || !image || !styleTransfer.transferStyle) return;
+    if (busy || !image || !styler.transferStyle) return;
     setBusy(true);
     setStyledImage(null);
     setLatency(null);
     setError(null);
     try {
       const t0 = Date.now();
-      const output = await styleTransfer.transferStyle(image.buffer);
+      const output = await styler.transferStyle(image.buffer);
       setLatency(Date.now() - t0);
 
       const skiaStyled = bufferToSkImage(output);
@@ -48,15 +55,15 @@ function StyleTransferTask() {
     <TaskScreen
       title="Style Transfer"
       subtitle="Mosaic Style"
-      status={{ ...styleTransfer, error: error || styleTransfer.error }}
+      status={{ ...styler, error: error || styler.error }}
       onLoadModel={!loaded ? () => setLoaded(true) : undefined}
-      canRun={!!image && styleTransfer.isReady && !busy}
+      canRun={!!image && styler.isReady && !busy}
       busy={busy}
       onRun={run}
       runLabel="Transfer Style"
       meta={latency != null ? `Inference ${latency} ms` : undefined}
       onDeleteModel={async () => {
-        await deleteCachedFiles(styleTransfer.resource);
+        await deleteCachedFiles(styler.resource);
         setLoaded(false);
       }}
     >

@@ -5,7 +5,16 @@ import { OcrOverlay } from '@/components/OcrOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
+import { selectBackendModel } from '@/lib/models';
+
+// TODO: remove when https://github.com/software-mansion/react-native-executorch/pull/1392 lands
+const MODEL = selectBackendModel({
+  coreml: models.ocr.PADDLE.PPOCRV6_SMALL.COREML,
+  vulkan: models.ocr.PADDLE.PPOCRV6_SMALL.VULKAN,
+  xnnpack: models.ocr.PADDLE.PPOCRV6_SMALL.XNNPACK,
+});
 
 function OcrTask() {
   const [loaded, setLoaded] = useState(false);
@@ -15,9 +24,7 @@ function OcrTask() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const ocr = useOpticalCharacterRecognizer(models.ocr.PADDLE.PPOCRV6_SMALL.DEFAULT, {
-    preventLoad: !loaded,
-  });
+  const ocr = useOpticalCharacterRecognizer(MODEL, { preventLoad: !loaded });
 
   const run = async () => {
     if (!image || !ocr.recognizeCharacters) return;

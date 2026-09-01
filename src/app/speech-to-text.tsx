@@ -5,8 +5,17 @@ import { MicActionButton } from '@/components/MicActionButton';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { SpeechTranscriptionViewport } from '@/components/SpeechTranscriptionViewport';
 import { TaskScreen } from '@/components/TaskScreen';
+
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
+import { selectBackendModel } from '@/lib/models';
+
+// TODO: remove when https://github.com/software-mansion/react-native-executorch/pull/1392 lands
+const MODEL = selectBackendModel({
+  coreml: models.speechToText.WHISPER.EN.TINY.COREML_FP16,
+  xnnpack: models.speechToText.WHISPER.EN.TINY.XNNPACK_FP32,
+});
 
 function SpeechToTextTask() {
   const [loaded, setLoaded] = useState(false);
@@ -14,10 +23,8 @@ function SpeechToTextTask() {
   const [nonCommittedText, setNonCommittedText] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const stt = useSpeechToText(models.speechToText.WHISPER.EN.TINY.XNNPACK_FP32, {
-    preventLoad: !loaded,
-  });
   const recorder = useAudioRecorder();
+  const stt = useSpeechToText(MODEL, { preventLoad: !loaded });
 
   const toggleRecording = async () => {
     if (recorder.isRecording) {
@@ -59,7 +66,10 @@ function SpeechToTextTask() {
     <TaskScreen
       title="Speech to Text"
       subtitle="Whisper Tiny (EN) · CPU"
-      status={{ ...stt, error: error || (stt.error ? stt.error.message : null) }}
+      status={{
+        ...stt,
+        error: error || (stt.error ? stt.error.message : null),
+      }}
       onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       busy={recorder.isRecording}
       onRun={() => undefined}

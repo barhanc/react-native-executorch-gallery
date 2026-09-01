@@ -1,23 +1,33 @@
 import { useState } from 'react';
-import { models, useKeypointDetector, type KeypointDetection } from 'react-native-executorch';
+import {
+  models,
+  useKeypointDetector,
+  type CocoLandmark,
+  type KeypointDetection,
+} from 'react-native-executorch';
 
 import { KeypointOverlay } from '@/components/KeypointOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
+import { selectBackendModel } from '@/lib/models';
+
+// TODO: remove when https://github.com/software-mansion/react-native-executorch/pull/1392 lands
+const MODEL = selectBackendModel({
+  xnnpack: models.keypointDetection.YOLO26_POSE.SIZE_384.XNNPACK_FP32,
+});
 
 function KeypointDetectionTask() {
   const [loaded, setLoaded] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
-  const [results, setResults] = useState<KeypointDetection<'xyxy', string>[]>([]);
+  const [results, setResults] = useState<KeypointDetection<'xyxy', CocoLandmark>[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const detector = useKeypointDetector(models.keypointDetection.YOLO26_POSE.DEFAULT, {
-    preventLoad: !loaded,
-  });
+  const detector = useKeypointDetector(MODEL, { preventLoad: !loaded });
 
   const run = async () => {
     if (!image || !detector.detectKeypoints) return;

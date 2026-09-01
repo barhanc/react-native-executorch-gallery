@@ -5,15 +5,24 @@ import { GeneratedImageViewport } from '@/components/GeneratedImageViewport';
 import { PromptInput } from '@/components/PromptInput';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
-import { bufferToSkImage } from '@/lib/image';
+
 import { useDisposableImage } from '@/hooks/useDisposableImage';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
+import { bufferToSkImage } from '@/lib/image';
+import { selectBackendModel } from '@/lib/models';
 
 const SUGGESTIONS = [
   'A serene mountain lake at sunrise, hyperrealistic, 8k',
   'A cozy library with warm candlelight, digital painting',
   'A golden retriever puppy in a field of flowers, studio photo',
 ];
+
+// TODO: remove when https://github.com/software-mansion/react-native-executorch/pull/1392 lands
+const MODEL = selectBackendModel({
+  coreml: models.textToImage.SDXS_512_DREAMSHAPER.COREML_FP16,
+  xnnpack: models.textToImage.SDXS_512_DREAMSHAPER.XNNPACK_FP32,
+});
 
 function TextToImageTask() {
   const [loaded, setLoaded] = useState(false);
@@ -23,9 +32,7 @@ function TextToImageTask() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const textToImage = useTextToImage(models.textToImage.SDXS_512_DREAMSHAPER.DEFAULT, {
-    preventLoad: !loaded,
-  });
+  const textToImage = useTextToImage(MODEL, { preventLoad: !loaded });
 
   const run = async () => {
     if (busy || !prompt.trim() || !textToImage.generate) return;
@@ -37,6 +44,7 @@ function TextToImageTask() {
       const t0 = Date.now();
       const output = await textToImage.generate(prompt);
       setLatency(Date.now() - t0);
+
       const skiaImage = bufferToSkImage(output);
       if (!skiaImage) throw new Error('Failed to create image from generated output');
       setImage(skiaImage);

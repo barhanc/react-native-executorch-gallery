@@ -5,7 +5,15 @@ import { DetectionOverlay } from '@/components/DetectionOverlay';
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
+import { selectBackendModel } from '@/lib/models';
+
+// TODO: remove when https://github.com/software-mansion/react-native-executorch/pull/1392 lands
+const MODEL = selectBackendModel({
+  coreml: models.objectDetection.SSDLITE320_MOBILENET_V3_LARGE.COREML_FP16,
+  xnnpack: models.objectDetection.SSDLITE320_MOBILENET_V3_LARGE.XNNPACK_FP32,
+});
 
 function ObjectDetectionTask() {
   const [loaded, setLoaded] = useState(false);
@@ -15,9 +23,7 @@ function ObjectDetectionTask() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const detector = useObjectDetector(models.objectDetection.SSDLITE320_MOBILENET_V3_LARGE.DEFAULT, {
-    preventLoad: !loaded,
-  });
+  const detector = useObjectDetector(MODEL, { preventLoad: !loaded });
 
   const run = async () => {
     if (!image || !detector.detectObjects) return;

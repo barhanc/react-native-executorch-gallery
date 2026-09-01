@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   models,
   useInstanceSegmenter,
+  type CocoClassYolo,
   type InstanceSegmentationResult,
 } from 'react-native-executorch';
 
@@ -9,19 +10,24 @@ import { InstanceSegmentationOverlay } from '@/components/InstanceSegmentationOv
 import { PhotoPicker, type PickedImage } from '@/components/PhotoPicker';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
+import { selectBackendModel } from '@/lib/models';
+
+// TODO: remove when https://github.com/software-mansion/react-native-executorch/pull/1392 lands
+const MODEL = selectBackendModel({
+  xnnpack: models.instanceSegmentation.YOLO26.NANO.SIZE_384.XNNPACK_FP32,
+});
 
 function InstanceSegmentationTask() {
   const [loaded, setLoaded] = useState(false);
   const [image, setImage] = useState<PickedImage | null>(null);
-  const [results, setResults] = useState<InstanceSegmentationResult<'xyxy', string>[]>([]);
+  const [results, setResults] = useState<InstanceSegmentationResult<'xyxy', CocoClassYolo>[]>([]);
   const [latency, setLatency] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const segmenter = useInstanceSegmenter(models.instanceSegmentation.YOLO26.NANO.DEFAULT, {
-    preventLoad: !loaded,
-  });
+  const segmenter = useInstanceSegmenter(MODEL, { preventLoad: !loaded });
 
   const run = async () => {
     if (!image || !segmenter.segmentInstances) return;

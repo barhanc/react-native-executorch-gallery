@@ -6,10 +6,10 @@ import { ChatViewport, type ChatMessage } from '@/components/ChatViewport';
 import { PromptInput } from '@/components/PromptInput';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 const SUGGESTIONS = [
-  'Who are you?',
   'Explain on-device AI in one sentence.',
   'Why is the sky blue?',
   'Write a short haiku about coding.',
@@ -17,6 +17,8 @@ const SUGGESTIONS = [
 
 const SYSTEM_PROMPT =
   'You are a helpful on-device LLM assistant running in React Native ExecuTorch';
+
+const MODEL = models.llm.LFM2_5_1_2B.DEFAULT;
 
 function LlmChatTask() {
   const [loaded, setLoaded] = useState(false);
@@ -26,7 +28,7 @@ function LlmChatTask() {
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<ScrollView | null>(null);
 
-  const llm = useLLMChatSession(models.llm.LFM2_5_1_2B.DEFAULT, {
+  const llm = useLLMChatSession(MODEL, {
     initialMessages: [{ role: 'system', content: SYSTEM_PROMPT }],
     generationConfig: { temperature: 0.2, maxNewTokens: 512, echo: false },
     preventLoad: !loaded,

@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { Keyboard } from 'react-native';
 import { KOKORO_SAMPLE_RATE, models, useTextToSpeech } from 'react-native-executorch';
 
 import { AudioWaveformVisualizer } from '@/components/AudioWaveformVisualizer';
 import { PromptInput } from '@/components/PromptInput';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { TaskScreen } from '@/components/TaskScreen';
+
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+
 import { deleteCachedFiles } from '@/lib/deleteCachedFiles';
 
 const SUGGESTIONS = [
@@ -15,6 +16,8 @@ const SUGGESTIONS = [
   'The weather today is warm and sunny with a clear blue sky.',
 ];
 
+const MODEL = models.textToSpeech.KOKORO.EN_US.DEFAULT;
+
 function TextToSpeechTask() {
   const [loaded, setLoaded] = useState(false);
   const [prompt, setPrompt] = useState('');
@@ -22,10 +25,8 @@ function TextToSpeechTask() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const tts = useTextToSpeech(models.textToSpeech.KOKORO.EN_US.DEFAULT, {
-    preventLoad: !loaded,
-  });
   const player = useAudioPlayer(KOKORO_SAMPLE_RATE);
+  const tts = useTextToSpeech(MODEL, { preventLoad: !loaded });
 
   const handleStop = () => {
     tts.synthesizeStop?.();
@@ -35,16 +36,13 @@ function TextToSpeechTask() {
 
   const run = async () => {
     if (busy || player.isPlaying || !prompt.trim() || !tts.synthesize) return;
-    Keyboard.dismiss();
     setBusy(true);
     setTtfa(null);
     setError(null);
     try {
       const t0 = Date.now();
       const chunks = tts.synthesize(prompt, { voice: 'af_heart' });
-      await player.playStream(chunks, () => {
-        setTtfa(Date.now() - t0);
-      });
+      await player.playStream(chunks, () => setTtfa(Date.now() - t0));
     } catch (err: any) {
       setError(err?.message ?? String(err));
     } finally {
@@ -58,7 +56,10 @@ function TextToSpeechTask() {
     <TaskScreen
       title="Text to Speech"
       subtitle="Kokoro 82M · EN_US"
-      status={{ ...tts, error: error || (tts.error ? tts.error.message : null) }}
+      status={{
+        ...tts,
+        error: error || (tts.error ? tts.error.message : null),
+      }}
       onLoadModel={!loaded ? () => setLoaded(true) : undefined}
       busy={isExecuting}
       onRun={() => undefined}
