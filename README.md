@@ -44,24 +44,35 @@ This showcase app is developed against the `rne-rewrite` branch of [`react-nativ
 
 Because the gallery consumes `react-native-executorch` as a standard npm dependency with native modules rather than an npm workspace symlink, local development uses a local [Verdaccio](https://verdaccio.org/) registry (`http://localhost:4873`):
 
-1. **Start Verdaccio and publish the library** (from the `react-native-executorch` repository on the `rne-rewrite` branch):
+1. **Start Verdaccio**:
 
    ```bash
-   git checkout rne-rewrite
-   # publish to local verdaccio
-   npm run local-publish # or verdaccio publish workflow
+   npx verdaccio
    ```
 
-2. **Install in the gallery**:
+2. **Authenticate & Publish the library** (from the `react-native-executorch` repository):
 
    ```bash
-   # configure npm to fetch react-native-executorch from local verdaccio
-   npm install react-native-executorch@0.0.0 --registry http://localhost:4873
+   # Log in once to your local Verdaccio registry (enter any username/password)
+   npm adduser --registry http://localhost:4873
+
+   # Build and publish react-native-executorch
+   cd packages/react-native-executorch
+   npm publish --registry http://localhost:4873 --tag dev
    ```
 
-3. **Rebuild Native Code**:
+3. **Install in the gallery**:
+
    ```bash
-   npx pod-install   # or npm run ios / npm run android
+   # In react-native-executorch-gallery:
+   npm install react-native-executorch@dev --registry http://localhost:4873
+   ```
+
+4. **Run the app**:
+
+   ```bash
+   npx pod-install   # for iOS
+   npm run ios       # or npm run android
    ```
 
 ## Documentation
