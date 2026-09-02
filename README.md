@@ -19,11 +19,11 @@ be lifted straight into your own app.
 
 <div align="center">
 
-|                              LLM Chat (LFM 2.5)                               |                                 Text to Image (SDXS)                                  |                         Text to Speech (Kokoro)                         |                        OCR Text Recognition                         |
-| :---------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------: | :---------------------------------------------------------------------: | :-----------------------------------------------------------------: |
-|          <img src="media/llm-chat.gif" width="180" alt="LLM Chat" />          |         <img src="media/text-to-image.gif" width="180" alt="Text to Image" />         | <img src="media/text-to-speech.gif" width="180" alt="Text to Speech" /> |    <img src="media/ocr.gif" width="180" alt="OCR Recognition" />    |
-|                         **Multimodal Search (CLIP)**                          |                               **Instance Segmentation**                               |                        **Privacy Filter (PII)**                         |                        **Gallery Overview**                         |
-| <img src="media/multimodal-search.gif" width="180" alt="Multimodal Search" /> | <img src="media/instance-segmentation.gif" width="180" alt="Instance Segmentation" /> | <img src="media/privacy-filter.gif" width="180" alt="Privacy Filter" /> | <img src="media/gallery-menu.gif" width="180" alt="Gallery Menu" /> |
+|                      **LLM Chat (LFM 2.5)**                      |                        **Text to Image (SDXS)**                         |                       **Text to Speech (Kokoro)**                       |                      **OCR Text Recognition**                       |
+| :--------------------------------------------------------------: | :---------------------------------------------------------------------: | :---------------------------------------------------------------------: | :-----------------------------------------------------------------: |
+|   <img src="media/llm-chat.gif" width="180" alt="LLM Chat" />    |  <img src="media/text-to-image.gif" width="180" alt="Text to Image" />  | <img src="media/text-to-speech.gif" width="180" alt="Text to Speech" /> |    <img src="media/ocr.gif" width="180" alt="OCR Recognition" />    |
+|                   **Multimodal Search (CLIP)**                   |                        **Instance Segmentation**                        |                        **Privacy Filter (PII)**                         |                        **Gallery Overview**                         |
+| <img src="media/multimodal-search.gif" width="180" alt="CLIP" /> | <img src="media/instance-segmentation.gif" width="180" alt="FastSAM" /> | <img src="media/privacy-filter.gif" width="180" alt="Privacy Filter" /> | <img src="media/gallery-menu.gif" width="180" alt="Gallery Menu" /> |
 
 </div>
 
