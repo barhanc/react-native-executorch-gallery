@@ -3,10 +3,13 @@
     <source media="(prefers-color-scheme: dark)" srcset="https://github.com/software-mansion/react-native-executorch/raw/main/docs/static/img/logo-vertical-dark.svg">
     <img src="https://github.com/software-mansion/react-native-executorch/raw/main/docs/static/img/logo-vertical.svg" alt="React Native ExecuTorch" width="260">
   </picture>
-  <div style="margin-top: 16px; margin-bottom: 28px; font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #2A47FF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-    GALLERY
-  </div>
+  <br />
+  <br />
+  <img src="media/gallery-title.svg" alt="Gallery" width="280">
 </div>
+
+<br />
+<br />
 
 **React Native ExecuTorch Gallery** is a showcase app demonstrating on-device
 machine learning tasks built with
