@@ -9,6 +9,11 @@
 </div>
 
 <br />
+
+> [!NOTE]
+> **Repository Relocated**: Active development of the Gallery showcase has moved to the official Software Mansion organization:  
+> **👉 [software-mansion-labs/react-native-executorch-gallery](https://github.com/software-mansion-labs/react-native-executorch-gallery)**
+
 <br />
 
 **React Native ExecuTorch Gallery** is a showcase app demonstrating on-device
