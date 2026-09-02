@@ -3,7 +3,7 @@ name: gallery-task-screen
 description: Use when creating or modifying a task screen in the react-native-executorch-gallery app. Enforces the rule that screens stay minimal and only showcase idiomatic library usage, with any extra logic moved into JSDoc-annotated custom hooks.
 metadata:
   id: gallery_task_screen
-  scope: src/app/*, src/hooks/*, src/components/*
+  scope: src/app/(screens)/*, src/hooks/*, src/components/*
 ---
 
 # Skill: Gallery Task Screens
