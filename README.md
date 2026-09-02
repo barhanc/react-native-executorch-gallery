@@ -34,6 +34,7 @@ npm install
 npm run ios       # or npm run android
 ```
 
+> [!IMPORTANT]
 > The app requires a development build (Expo Go is not supported). Models are
 > downloaded on first use and then run fully offline.
 
