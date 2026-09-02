@@ -81,10 +81,20 @@ Because the gallery consumes `react-native-executorch` as a standard npm depende
 
 ## Documentation
 
-The full library documentation lives in
-[`react-native-executorch`](https://github.com/software-mansion/react-native-executorch).
-Each task screen in this repository maps directly to a page in the docs.
+The full library documentation, task guides, architecture deep dives, and API references live in the main [`react-native-executorch`](https://github.com/software-mansion/react-native-executorch) repository. Each task screen in this showcase maps directly to an extension guide in the docs:
+
+**[docs.swmansion.com/react-native-executorch](https://docs.swmansion.com/react-native-executorch/)**
+
+---
+
+## License
+
+React Native ExecuTorch Gallery is licensed under the [MIT License](./LICENSE).
+
+---
 
 ## Created by Software Mansion
 
-This project is developed by [Software Mansion](https://swmansion.com/).
+Since 2012, [Software Mansion](https://swmansion.com) has been building mobile and web apps, contributing to open-source software, and dealing with all kinds of React Native challenges. We are Core React Native Contributors. We can help you build your next AI product – [Hire us](https://swmansion.com/contact?utm_source=react-native-executorch-gallery&utm_medium=readme).
+
+[![swm](https://logo.swmansion.com/logo?color=white&variant=desktop&width=150&tag=react-native-executorch-gallery-github 'Software Mansion')](https://swmansion.com)
