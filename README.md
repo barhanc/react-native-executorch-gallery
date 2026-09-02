@@ -85,14 +85,6 @@ The full library documentation, task guides, architecture deep dives, and API re
 
 **[docs.swmansion.com/react-native-executorch](https://docs.swmansion.com/react-native-executorch/)**
 
----
-
-## License
-
-React Native ExecuTorch Gallery is licensed under the [MIT License](./LICENSE).
-
----
-
 ## Created by Software Mansion
 
 Since 2012, [Software Mansion](https://swmansion.com) has been building mobile and web apps, contributing to open-source software, and dealing with all kinds of React Native challenges. We are Core React Native Contributors. We can help you build your next AI product – [Hire us](https://swmansion.com/contact?utm_source=react-native-executorch-gallery&utm_medium=readme).
